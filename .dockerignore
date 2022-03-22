@@ -1,0 +1,5 @@
+infra/db-backup
+build
+*/build
+.gradle
+**/node_modules

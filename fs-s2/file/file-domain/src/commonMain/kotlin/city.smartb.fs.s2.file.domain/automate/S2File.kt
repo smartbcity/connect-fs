@@ -1,0 +1,35 @@
+package city.smartb.fs.s2.file.domain.automate
+
+import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
+import kotlinx.serialization.Serializable
+import s2.dsl.automate.S2Role
+import s2.dsl.automate.S2State
+import s2.dsl.automate.builder.s2
+
+typealias FileId = String
+
+object S2 {
+	val traceSourcing = s2 {
+		name = "FileSourcing"
+		transaction<FileInitiatedEvent> {
+			to = FileState.Exists
+			role = FileRole.Tracer
+		}
+		selfTransaction<FileLoggedEvent> {
+			states += FileState.Exists
+			role = FileRole.Tracer
+		}
+	}
+}
+
+@Serializable
+open class FileRole(open val name: String): S2Role {
+	object Tracer: FileRole("Tracer")
+	override fun toString(): String = name
+}
+
+@Serializable
+enum class FileState(override var position: Int): S2State {
+	Exists(0)
+}

@@ -1,0 +1,43 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    function:
+      web:
+        path: /api
+  redis:
+    password: sOmE_sEcUrE_pAsS
+
+fs:
+  ssm:
+    channel: sandbox
+    chaincode: ssm
+    signerName: ssm-admin
+    signerFile: user/ssm-admin
+    categories:
+      - important
+
+s3:
+  url: http://localhost:9000
+  region: us-west-1
+  username: minio
+  password: minio123
+  bucket: fs-sample
+  dns: false
+
+ssm:
+  signer:
+    user:
+      name: ssm-admin
+      key: user/ssm-admin
+    admin:
+      name: ssm-admin
+      key: user/ssm-admin
+  couchdb:
+    url: http://localhost:5984
+    username: couchdb
+    password: couchdb
+    serviceName: fs-sample
+  chaincode:
+    url: http://localhost:9090

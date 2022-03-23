@@ -70,8 +70,7 @@ class FileEndpoint(
             .bucket(s3Config.bucket)
             .`object`(path)
             .stream(inputStream(), size.toLong(), -1)
-            .userMetadata(metadata.plus("id" to id).plus("Content-type" to "image/jpg"))
-            .contentType("image/jpg")
+            .userMetadata(metadata.plus("id" to id))
             .build()
             .let(minioClient::putObject)
     }
@@ -123,5 +122,5 @@ class FileEndpoint(
         }
     }
 
-    private fun buildFullPath(path: String) = "${s3Config.bucket}::$path"
+    private fun buildFullPath(path: String) = "${s3Config.url}/${s3Config.bucket}/$path"
 }

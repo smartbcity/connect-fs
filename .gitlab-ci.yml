@@ -1,31 +1,5 @@
 include:
   - project: 'fixers/cicd'
-    file: 'make/.gitlab-ci.yml'
-
-stages:
-  - package
-
-##########################################
-## Tasks
-##########################################
-
-api:
-  stage: package
-  extends:
-    - .make
-  variables:
-    MAKE_TARGET: package-gateway
-
-web:
-  stage: package
-  extends:
-    - .make
-  variables:
-    MAKE_TARGET: package-web
-
-docs:
-  stage: package
-  extends:
-    - .make
-  variables:
-    MAKE_TARGET: package-docs
+    file: 'fixers/.gitlab-ci-base.yml'
+  - project: 'fixers/cicd'
+    file: 'fixers/.gitlab-ci-libs.yml'

@@ -13,7 +13,7 @@ plugins {
 }
 
 allprojects {
-	group = "city.smartb.fixers.example.platform"
+	group = "city.smartb.fs"
 	version = System.getenv("VERSION") ?: "latest"
 	repositories {
 		mavenLocal()
@@ -28,10 +28,10 @@ subprojects {
 	plugins.withType(city.smartb.fixers.gradle.config.ConfigPlugin::class.java).whenPluginAdded {
 		fixers {
 			bundle {
-				id = "fixers-api-example"
-				name = "Fixers Api Example"
-				description = "Exemple of Fixers Api Example using s2 et f2"
-				url = "https://gitlab.smartb.city/fixers/example"
+				id = "fs"
+				name = "Connect FileSystem"
+				description = "File manager"
+				url = "https://gitlab.smartb.city/connect/fs"
 			}
 		}
 	}

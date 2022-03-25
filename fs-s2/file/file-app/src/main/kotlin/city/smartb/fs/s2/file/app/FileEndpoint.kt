@@ -71,6 +71,11 @@ class FileEndpoint(
             .`object`(path)
             .stream(inputStream(), size.toLong(), -1)
             .userMetadata(metadata.plus("id" to id))
+            .apply {
+                metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }?.let { (_, contentType) ->
+                    contentType(contentType)
+                }
+            }
             .build()
             .let(minioClient::putObject)
     }
@@ -102,7 +107,7 @@ class FileEndpoint(
         .encodeToB64()
 
     private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
-    private fun String.decodeB64() = Base64.getDecoder().decode(this)//substringAfterLast(";base64,"))
+    private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
     private fun getFileMetadata(path: String): Map<String, String>? {
         return try {

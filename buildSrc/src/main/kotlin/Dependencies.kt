@@ -45,4 +45,5 @@ object Dependencies {
 	fun junit(scope: Scope) = FixersDependencies.Jvm.Test.junit(scope)
 	fun cucumber(scope: Scope) = FixersDependencies.Jvm.Test.cucumber(scope)
 
+	fun ktor(scope: Scope) = FixersDependencies.Jvm.Kotlin.ktorClient(scope)
 }

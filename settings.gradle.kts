@@ -16,5 +16,6 @@ include(
 
 include(
 	"fs-s2:file:file-app",
+	"fs-s2:file:file-client",
 	"fs-s2:file:file-domain",
 )

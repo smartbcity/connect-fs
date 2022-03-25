@@ -2,10 +2,6 @@ server:
   port: 8090
 
 spring:
-  cloud:
-    function:
-      web:
-        path: /api
   redis:
     password: sOmE_sEcUrE_pAsS
 
@@ -20,8 +16,8 @@ fs:
   ssm:
     channel: sandbox
     chaincode: ssm
-    signerName: ssm-admin
-    signerFile: user/ssm-admin
+    signerName: ${ssm.signer.admin.name}
+    signerFile: ${ssm.signer.admin.key}
     categories:
       - important
 

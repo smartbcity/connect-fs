@@ -10,6 +10,13 @@ spring:
     password: sOmE_sEcUrE_pAsS
 
 fs:
+  s3:
+    url: http://localhost:9000
+    region: us-west-1
+    username: minio
+    password: minio123
+    bucket: fs-sample
+    dns: false
   ssm:
     channel: sandbox
     chaincode: ssm
@@ -17,14 +24,6 @@ fs:
     signerFile: user/ssm-admin
     categories:
       - important
-
-s3:
-  url: http://localhost:9000
-  region: us-west-1
-  username: minio
-  password: minio123
-  bucket: fs-sample
-  dns: false
 
 ssm:
   signer:

@@ -8,22 +8,22 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class S3Config {
 
-    @Value("\${s3.url}")
+    @Value("\${fs.s3.url}")
     lateinit var url: String
 
-    @Value("\${s3.region}")
+    @Value("\${fs.s3.region}")
     lateinit var region: String
 
-    @Value("\${s3.username}")
+    @Value("\${fs.s3.username}")
     lateinit var username: String
 
-    @Value("\${s3.password}")
+    @Value("\${fs.s3.password}")
     lateinit var password: String
 
-    @Value("\${s3.bucket}")
+    @Value("\${fs.s3.bucket}")
     lateinit var bucket: String
 
-    @Value("\${s3.dns}")
+    @Value("\${fs.s3.dns}")
     var dns: Boolean = false
 
     @Bean

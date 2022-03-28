@@ -2,9 +2,12 @@ package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
-import city.smartb.fs.s2.file.app.entity.FileEntity
+import city.smartb.fs.s2.file.app.model.FilePathUtils
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.domain.automate.FileId
+import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
+import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
 import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
@@ -14,6 +17,7 @@ import f2.dsl.fnc.f2Function
 import io.minio.GetObjectArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
+import io.minio.RemoveObjectArgs
 import io.minio.StatObjectArgs
 import io.minio.errors.ErrorResponseException
 import org.springframework.context.annotation.Bean
@@ -32,7 +36,7 @@ class FileEndpoint(
 
     @Bean
     fun uploadFile(): FileUploadFunction = f2Function { cmd ->
-        val path = FileEntity.path(
+        val path = FilePathUtils.buildRelativePath(
             objectId = cmd.objectId,
             category = cmd.category,
             name = cmd.name
@@ -45,7 +49,7 @@ class FileEndpoint(
         val fileByteArray = cmd.content.decodeB64()
         fileByteArray.saveFileInS3(path, fileId, cmd.metadata)
 
-        if (cmd.category in fsSsmConfig.categories) {
+        if (mustBeSavedToSsm(cmd.category)) {
             if (fileExists) {
                 fileByteArray.logFileInSsm(cmd, fileId, buildFullPath(path))
             } else {
@@ -65,6 +69,32 @@ class FileEndpoint(
         }
     }
 
+    @Bean
+    fun deleteFile(): FileDeleteFunction = f2Function { cmd ->
+        val path = FilePathUtils.buildRelativePath(
+            objectId = cmd.objectId,
+            category = cmd.category,
+            name = cmd.name
+        )
+
+        val metadata = getFileMetadata(path)
+            ?: throw IllegalArgumentException("File not found at path [$path]")
+
+        val id = metadata["id"]!!
+
+        RemoveObjectArgs.builder()
+            .bucket(s3Config.bucket)
+            .`object`(path)
+            .build()
+            .let(minioClient::removeObject)
+
+        if (mustBeSavedToSsm(cmd.category)) {
+            fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
+        }
+
+        FileDeletedEvent(id = id)
+    }
+
     private fun ByteArray.saveFileInS3(path: String, id: FileId, metadata: Map<String, String>) {
         PutObjectArgs.builder()
             .bucket(s3Config.bucket)
@@ -79,6 +109,8 @@ class FileEndpoint(
             .build()
             .let(minioClient::putObject)
     }
+
+    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories
 
     private suspend fun ByteArray.initFileInSsm(cmd: FileUploadCommand, fileId: FileId, path: String): FileUploadedEvent {
         return FileInitCommand(
@@ -127,5 +159,5 @@ class FileEndpoint(
         }
     }
 
-    private fun buildFullPath(path: String) = "${s3Config.url}/${s3Config.bucket}/$path"
+    private fun buildFullPath(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.url, s3Config.bucket, s3Config.dns)
 }

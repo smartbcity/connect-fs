@@ -1,5 +1,6 @@
 package city.smartb.fs.s2.file.domain.automate
 
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
 import kotlinx.serialization.Serializable
@@ -20,6 +21,11 @@ object S2 {
 			states += FileState.Exists
 			role = FileRole.Tracer
 		}
+		transaction<FileDeletedEvent> {
+			from = FileState.Exists
+			to = FileState.Deleted
+			role = FileRole.Tracer
+		}
 	}
 }
 
@@ -31,5 +37,6 @@ open class FileRole(open val name: String): S2Role {
 
 @Serializable
 enum class FileState(override var position: Int): S2State {
-	Exists(0)
+	Exists(0),
+	Deleted(1)
 }

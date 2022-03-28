@@ -1,17 +1,14 @@
 package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.s2.file.app.config.FileSourcingS2Decider
-import city.smartb.fs.s2.file.app.config.S3Config
 import city.smartb.fs.s2.file.domain.FileDecider
+import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
 import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
 import org.springframework.stereotype.Service
-import java.security.MessageDigest
-import java.util.Base64
 
 @Service
 class FileDeciderSourcingImpl(
@@ -41,6 +38,12 @@ class FileDeciderSourcingImpl(
 			hash = cmd.hash,
 			metadata = cmd.metadata,
 			time = System.currentTimeMillis(),
+		)
+	}
+
+	override suspend fun delete(cmd: FileDeleteByIdCommand): FileDeletedEvent = decider.transition(cmd) { file ->
+		FileDeletedEvent(
+			id = file.id
 		)
 	}
 }

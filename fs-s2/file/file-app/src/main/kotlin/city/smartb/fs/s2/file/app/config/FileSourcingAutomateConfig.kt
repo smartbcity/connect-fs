@@ -6,6 +6,7 @@ import city.smartb.fs.s2.file.app.view.RedisSnapView
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.automate.FileState
 import city.smartb.fs.s2.file.domain.automate.S2
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
@@ -38,8 +39,9 @@ class FileSourcingAutomateConfig(
 	override fun json(): Json = Json {
 		serializersModule = SerializersModule {
 			polymorphic(FileEvent::class) {
-				subclass(FileLoggedEvent::class, FileLoggedEvent.serializer())
 				subclass(FileInitiatedEvent::class, FileInitiatedEvent.serializer())
+				subclass(FileLoggedEvent::class, FileLoggedEvent.serializer())
+				subclass(FileDeletedEvent::class, FileDeletedEvent.serializer())
 			}
 		}
 	}

@@ -159,5 +159,5 @@ class FileEndpoint(
         }
     }
 
-    private fun buildFullPath(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.url, s3Config.bucket, s3Config.dns)
+    private fun buildFullPath(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.externalUrl, s3Config.bucket, s3Config.dns)
 }

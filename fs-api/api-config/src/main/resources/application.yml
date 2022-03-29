@@ -7,7 +7,8 @@ spring:
 
 fs:
   s3:
-    url: http://localhost:9000
+    internal-url: http://localhost:9000
+    external-url: http://localhost:9000
     region: us-west-1
     username: minio
     password: minio123

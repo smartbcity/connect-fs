@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class S3Config {
 
-    @Value("\${fs.s3.url}")
-    lateinit var url: String
+    @Value("\${fs.s3.internal-url}")
+    lateinit var internalUrl: String
+
+    @Value("\${fs.s3.external-url}")
+    lateinit var externalUrl: String
 
     @Value("\${fs.s3.region}")
     lateinit var region: String
@@ -28,7 +31,7 @@ class S3Config {
 
     @Bean
     fun minioClient(): MinioClient = MinioClient.builder()
-        .endpoint(url)
+        .endpoint(internalUrl)
         .region(region)
         .credentials(username, password)
         .build()

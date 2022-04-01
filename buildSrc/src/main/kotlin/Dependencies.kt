@@ -16,7 +16,6 @@ object Versions {
 	val ssm = PluginVersions.fixers
 
 	const val springBoot = PluginVersions.springBoot
-	const val testcontainers =	"1.16.3"
 	const val minio = "8.3.7"
 }
 

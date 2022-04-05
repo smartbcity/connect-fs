@@ -14,7 +14,6 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import f2.dsl.fnc.f2Function
-import io.minio.GetObjectArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
@@ -22,6 +21,7 @@ import io.minio.StatObjectArgs
 import io.minio.errors.ErrorResponseException
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.net.URLConnection
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
@@ -96,16 +96,16 @@ class FileEndpoint(
     }
 
     private fun ByteArray.saveFileInS3(path: String, id: FileId, metadata: Map<String, String>) {
+        val contentType = metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }
+            ?.value
+            ?: URLConnection.guessContentTypeFromName(path)
+
         PutObjectArgs.builder()
             .bucket(s3Config.bucket)
             .`object`(path)
             .stream(inputStream(), size.toLong(), -1)
             .userMetadata(metadata.plus("id" to id))
-            .apply {
-                metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }?.let { (_, contentType) ->
-                    contentType(contentType)
-                }
-            }
+            .apply { contentType?.let(this::contentType) }
             .build()
             .let(minioClient::putObject)
     }

@@ -3,7 +3,9 @@ server:
 
 spring:
   redis:
-    password: sOmE_sEcUrE_pAsS
+    password: sOmE_sEcUrE_pAsSapi
+  codec:
+    max-in-memory-size: 10MB
 
 fs:
   s3:

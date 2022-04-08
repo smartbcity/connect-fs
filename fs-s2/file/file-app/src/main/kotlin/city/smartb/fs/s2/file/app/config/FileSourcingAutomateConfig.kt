@@ -13,6 +13,7 @@ import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import s2.spring.automate.sourcing.S2AutomateDeciderSpring
@@ -23,6 +24,7 @@ import ssm.chaincode.dsl.model.uri.from
 import ssm.sdk.sign.extention.loadFromFile
 import kotlin.reflect.KClass
 
+@ConditionalOnProperty("ssm.chaincode.url")
 @Configuration
 class FileSourcingAutomateConfig(
 	private val fsSsmConfig: FsSsmConfig,

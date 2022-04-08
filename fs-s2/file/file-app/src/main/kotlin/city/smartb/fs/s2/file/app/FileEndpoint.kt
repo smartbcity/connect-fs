@@ -110,7 +110,7 @@ class FileEndpoint(
             .let(minioClient::putObject)
     }
 
-    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories
+    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories.orEmpty()
 
     private suspend fun ByteArray.initFileInSsm(cmd: FileUploadCommand, fileId: FileId, path: String): FileUploadedEvent {
         return FileInitCommand(

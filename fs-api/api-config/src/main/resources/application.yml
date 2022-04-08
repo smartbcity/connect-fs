@@ -19,8 +19,14 @@ fs:
     chaincode: ssm
     signerName: ${ssm.signer.admin.name}
     signerFile: ${ssm.signer.admin.key}
-    categories:
-      - important
+#    categories:
+#      - important
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
 
 ssm:
   signer:

@@ -4,6 +4,7 @@ import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
 import city.smartb.fs.s2.file.app.model.FilePathUtils
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
+import city.smartb.fs.s2.file.app.service.S3Service
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -14,14 +15,8 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import f2.dsl.fnc.f2Function
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
-import io.minio.RemoveObjectArgs
-import io.minio.StatObjectArgs
-import io.minio.errors.ErrorResponseException
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.net.URLConnection
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
@@ -30,8 +25,8 @@ import java.util.UUID
 class FileEndpoint(
     private val fileDeciderSourcingImpl: FileDeciderSourcingImpl,
     private val fsSsmConfig: FsSsmConfig,
-    private val minioClient: MinioClient,
-    private val s3Config: S3Config
+    private val s3Config: S3Config,
+    private val s3Service: S3Service,
 ) {
 
     @Bean
@@ -42,12 +37,16 @@ class FileEndpoint(
             name = cmd.name
         )
 
-        val fileMetadata = getFileMetadata(path)
+        val fileMetadata = s3Service.getObjectMetadata(path)
         val fileExists = fileMetadata != null
         val fileId = fileMetadata?.get("id") ?: UUID.randomUUID().toString()
 
         val fileByteArray = cmd.content.decodeB64()
-        fileByteArray.saveFileInS3(path, fileId, cmd.metadata)
+        s3Service.putObject(
+            path = path,
+            content = fileByteArray,
+            metadata = cmd.metadata.plus("id" to fileId)
+        )
 
         if (mustBeSavedToSsm(cmd.category)) {
             if (fileExists) {
@@ -77,37 +76,17 @@ class FileEndpoint(
             name = cmd.name
         )
 
-        val metadata = getFileMetadata(path)
+        val metadata = s3Service.getObjectMetadata(path)
             ?: throw IllegalArgumentException("File not found at path [$path]")
 
         val id = metadata["id"]!!
 
-        RemoveObjectArgs.builder()
-            .bucket(s3Config.bucket)
-            .`object`(path)
-            .build()
-            .let(minioClient::removeObject)
-
+        s3Service.removeObject(path)
         if (mustBeSavedToSsm(cmd.category)) {
             fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
         }
 
         FileDeletedEvent(id = id)
-    }
-
-    private fun ByteArray.saveFileInS3(path: String, id: FileId, metadata: Map<String, String>) {
-        val contentType = metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }
-            ?.value
-            ?: URLConnection.guessContentTypeFromName(path)
-
-        PutObjectArgs.builder()
-            .bucket(s3Config.bucket)
-            .`object`(path)
-            .stream(inputStream(), size.toLong(), -1)
-            .userMetadata(metadata.plus("id" to id))
-            .apply { contentType?.let(this::contentType) }
-            .build()
-            .let(minioClient::putObject)
     }
 
     private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories.orEmpty()
@@ -140,24 +119,6 @@ class FileEndpoint(
 
     private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
     private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
-
-    private fun getFileMetadata(path: String): Map<String, String>? {
-        return try {
-            StatObjectArgs.builder()
-                .bucket(s3Config.bucket)
-                .`object`(path)
-                .build()
-                .let(minioClient::statObject)
-                .userMetadata()
-                .mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
-        } catch (e: ErrorResponseException) {
-            if (e.errorResponse().code() == "NoSuchKey") {
-                null
-            } else {
-                throw e
-            }
-        }
-    }
 
     private fun buildFullPath(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.externalUrl, s3Config.bucket, s3Config.dns)
 }

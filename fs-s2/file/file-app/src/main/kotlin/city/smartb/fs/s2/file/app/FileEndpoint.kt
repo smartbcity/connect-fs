@@ -15,8 +15,11 @@ import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetListFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
+import city.smartb.fs.s2.file.domain.features.query.FileGetResult
+import city.smartb.fs.s2.file.domain.model.File
 import f2.dsl.fnc.f2Function
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,6 +34,33 @@ class FileEndpoint(
     private val s3Config: S3Config,
     private val s3Service: S3Service,
 ) {
+
+    @Bean
+    fun getFile(): FileGetFunction = f2Function { query ->
+        val path = FilePathUtils.buildRelativePath(
+            objectId = query.objectId,
+            category = query.category,
+            name = query.name
+        )
+        val metadata = s3Service.getObjectMetadata(path)
+            ?: return@f2Function FileGetResult(null, null)
+
+        val content = s3Service.getObject(path)!!.use { input ->
+            input.readBytes().encodeToB64()
+        }
+
+        FileGetResult(
+            file = File(
+                id = metadata["id"].orEmpty(),
+                name = query.name,
+                objectId = query.objectId,
+                category = query.category,
+                url = buildUrl(path),
+                metadata = metadata
+            ),
+            content = content
+        )
+    }
 
     @Bean
     fun listFiles(): FileGetListFunction = f2Function { query ->

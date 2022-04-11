@@ -1,6 +1,8 @@
 package city.smartb.fs.s2.file.app.service
 
 import city.smartb.fs.s2.file.app.config.S3Config
+import io.minio.GetObjectArgs
+import io.minio.GetObjectResponse
 import io.minio.ListObjectsArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
@@ -63,6 +65,22 @@ class S3Service(
                 .`object`(path)
                 .build()
                 .let(minioClient::statObject)
+        } catch (e: ErrorResponseException) {
+            if (e.errorResponse().code() == "NoSuchKey") {
+                null
+            } else {
+                throw e
+            }
+        }
+    }
+
+    fun getObject(path: String): GetObjectResponse? {
+        return try {
+            GetObjectArgs.builder()
+                .bucket(s3Config.bucket)
+                .`object`(path)
+                .build()
+                .let(minioClient::getObject)
         } catch (e: ErrorResponseException) {
             if (e.errorResponse().code() == "NoSuchKey") {
                 null

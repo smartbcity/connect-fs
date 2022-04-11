@@ -34,8 +34,13 @@ class FileEndpoint(
 
     @Bean
     fun listFiles(): FileGetListFunction = f2Function { query ->
-        s3Service.listObjects(prefix = "${query.objectId}/${query.category?.plus("/").orEmpty()}")
-            .map { obj -> obj.get().toFile(::buildFullPath) }
+        val prefix = FilePathUtils.buildRelativePath(
+            objectId = query.objectId,
+            category = query.category,
+            name = ""
+        )
+        s3Service.listObjects(prefix)
+            .map { obj -> obj.get().toFile(::buildUrl) }
             .let(::FileGetListResult)
     }
 
@@ -60,9 +65,9 @@ class FileEndpoint(
 
         if (mustBeSavedToSsm(cmd.category)) {
             if (fileExists) {
-                fileByteArray.logFileInSsm(cmd, fileId, buildFullPath(path))
+                fileByteArray.logFileInSsm(cmd, fileId, buildUrl(path))
             } else {
-                fileByteArray.initFileInSsm(cmd, fileId, buildFullPath(path))
+                fileByteArray.initFileInSsm(cmd, fileId, buildUrl(path))
             }
         } else {
             FileUploadedEvent(
@@ -70,7 +75,7 @@ class FileEndpoint(
                 name = cmd.name,
                 objectId = cmd.objectId,
                 category = cmd.category,
-                path = buildFullPath(path),
+                url = buildUrl(path),
                 hash = fileByteArray.hash(),
                 metadata = cmd.metadata,
                 time = System.currentTimeMillis()
@@ -130,5 +135,5 @@ class FileEndpoint(
     private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
     private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
-    private fun buildFullPath(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.externalUrl, s3Config.bucket, s3Config.dns)
+    private fun buildUrl(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.externalUrl, s3Config.bucket, s3Config.dns)
 }

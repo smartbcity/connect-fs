@@ -1,6 +1,7 @@
 package city.smartb.fs.s2.file.domain.features.command
 
 import city.smartb.fs.s2.file.domain.automate.FileId
+import city.smartb.fs.s2.file.domain.model.Base64String
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,7 +14,7 @@ data class FileUploadCommand(
 	val objectId: String,
 	val category: String?,
 	val metadata: Map<String, String>,
-	val content: String // base64
+	val content: Base64String
 )
 
 @Serializable
@@ -23,7 +24,7 @@ data class FileUploadedEvent(
 	val name: String,
 	val objectId: String,
 	val category: String?,
-	val path: String,
+	val url: String,
 	val hash: String,
 	val metadata: Map<String, String>,
 	val time: Long

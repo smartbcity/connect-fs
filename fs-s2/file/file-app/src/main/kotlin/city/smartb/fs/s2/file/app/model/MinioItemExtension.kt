@@ -13,7 +13,7 @@ fun Item.toFile(buildFullPath: (String) -> String): File {
         name = name,
         objectId = objectId,
         category = category,
-        path = buildFullPath(path),
+        url = buildFullPath(path),
         metadata = metadata
     )
 }

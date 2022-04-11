@@ -11,6 +11,6 @@ data class File(
     val name: String,
     val objectId: String,
     val category: String?,
-    val path: String,
+    val url: String,
     val metadata: Map<String, String>
 )

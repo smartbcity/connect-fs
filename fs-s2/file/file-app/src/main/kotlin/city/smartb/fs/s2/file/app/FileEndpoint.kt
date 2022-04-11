@@ -3,6 +3,7 @@ package city.smartb.fs.s2.file.app
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
 import city.smartb.fs.s2.file.app.model.FilePathUtils
+import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
 import city.smartb.fs.s2.file.domain.automate.FileId
@@ -14,6 +15,8 @@ import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.query.FileGetListFunction
+import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
 import f2.dsl.fnc.f2Function
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -28,6 +31,13 @@ class FileEndpoint(
     private val s3Config: S3Config,
     private val s3Service: S3Service,
 ) {
+
+    @Bean
+    fun listFiles(): FileGetListFunction = f2Function { query ->
+        s3Service.listObjects(prefix = "${query.objectId}/${query.category?.plus("/").orEmpty()}")
+            .map { obj -> obj.get().toFile(::buildFullPath) }
+            .let(::FileGetListResult)
+    }
 
     @Bean
     fun uploadFile(): FileUploadFunction = f2Function { cmd ->

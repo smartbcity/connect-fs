@@ -1,12 +1,15 @@
 package city.smartb.fs.s2.file.app.service
 
 import city.smartb.fs.s2.file.app.config.S3Config
+import io.minio.ListObjectsArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.Result
 import io.minio.StatObjectArgs
 import io.minio.StatObjectResponse
 import io.minio.errors.ErrorResponseException
+import io.minio.messages.Item
 import org.springframework.stereotype.Service
 import java.net.URLConnection
 
@@ -39,10 +42,19 @@ class S3Service(
             .let(minioClient::removeObject)
     }
 
+    fun listObjects(prefix: String): Iterable<Result<Item>> {
+        return ListObjectsArgs.builder()
+            .bucket(s3Config.bucket)
+            .prefix(prefix)
+            .recursive(true)
+            .includeUserMetadata(true)
+            .build()
+            .let(minioClient::listObjects)
+    }
+
     fun getObjectMetadata(path: String) = statObject(path)
         ?.userMetadata()
         ?.mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
-
 
     fun statObject(path: String): StatObjectResponse? {
         return try {

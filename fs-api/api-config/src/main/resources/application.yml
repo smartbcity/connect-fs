@@ -29,22 +29,24 @@ spring:
       on-profile: local
 
 fs:
+  s3:
+    username: minio
   ssm:
     categories:
       - important
 
-ssm:
-  signer:
-    user:
-      name: ssm-admin
-      key: user/ssm-admin
-    admin:
-      name: ssm-admin
-      key: user/ssm-admin
-  couchdb:
-    url: http://localhost:5984
-    username: couchdb
-    password: couchdb
-    serviceName: fs-sample
-  chaincode:
-    url: http://localhost:9090
+#ssm:
+#  signer:
+#    user:
+#      name: ssm-admin
+#      key: user/ssm-admin
+#    admin:
+#      name: ssm-admin
+#      key: user/ssm-admin
+#  couchdb:
+#    url: http://localhost:5984
+#    username: couchdb
+#    password: couchdb
+#    serviceName: fs-sample
+#  chaincode:
+#    url: http://localhost:9090

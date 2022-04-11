@@ -1,8 +1,8 @@
-package city.smartb.fs.s2.file.app.model
+package city.smartb.fs.s2.file.app.utils
 
 object FilePathUtils {
 
-    fun buildRelativePath(objectId: String, category: String?, name: String) = "$objectId/${category?.plus("/")}$name"
+    fun buildRelativePath(objectId: String, category: String?, name: String) = "$objectId/${category?.plus("/").orEmpty()}$name"
 
     fun parseRelativePath(path: String): Triple<String, String?, String> {
         val (objectId, subPath) = path.split("/", limit = 2)

@@ -2,16 +2,23 @@ package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
-import city.smartb.fs.s2.file.app.model.FilePathUtils
+import city.smartb.fs.s2.file.app.model.S3Action
+import city.smartb.fs.s2.file.app.model.S3Effect
+import city.smartb.fs.s2.file.app.model.Statement
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
+import city.smartb.fs.s2.file.app.utils.FilePathUtils
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
+import city.smartb.fs.s2.file.domain.features.command.FileInitPublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
+import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryInitializedEvent
+import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevokedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
@@ -132,6 +139,42 @@ class FileEndpoint(
         }
 
         FileDeletedEvent(id = id)
+    }
+
+    @Bean
+    fun initPublicDirectory(): FileInitPublicDirectoryFunction = f2Function { cmd ->
+        val path = FilePathUtils.buildRelativePath(
+            objectId = cmd.objectId,
+            category = cmd.category,
+            name = "*"
+        )
+
+        val policy = s3Service.getBucketPolicy()
+        policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
+            .addResource(bucket = s3Config.bucket, path = path)
+        s3Service.setBucketPolicy(policy)
+
+        FilePublicDirectoryInitializedEvent(
+            path = Statement.resourcePath(bucket = s3Config.bucket, path = path)
+        )
+    }
+
+    @Bean
+    fun revokePublicDirectory(): FileRevokePublicDirectoryFunction = f2Function { cmd ->
+        val path = FilePathUtils.buildRelativePath(
+            objectId = cmd.objectId,
+            category = cmd.category,
+            name = "*"
+        )
+
+        val policy = s3Service.getBucketPolicy()
+        policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
+            ?.removeResource(bucket = s3Config.bucket, path = path)
+        s3Service.setBucketPolicy(policy)
+
+        FilePublicDirectoryRevokedEvent(
+            path = Statement.resourcePath(bucket = s3Config.bucket, path = path)
+        )
     }
 
     private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories.orEmpty()

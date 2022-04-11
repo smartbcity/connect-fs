@@ -1,5 +1,6 @@
 package city.smartb.fs.s2.file.app.model
 
+import city.smartb.fs.s2.file.app.utils.FilePathUtils
 import city.smartb.fs.s2.file.domain.model.File
 import io.minio.messages.Item
 

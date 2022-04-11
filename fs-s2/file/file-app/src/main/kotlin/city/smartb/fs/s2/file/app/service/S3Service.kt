@@ -1,6 +1,10 @@
 package city.smartb.fs.s2.file.app.service
 
 import city.smartb.fs.s2.file.app.config.S3Config
+import city.smartb.fs.s2.file.app.model.Policy
+import city.smartb.fs.s2.file.app.utils.parseJsonTo
+import city.smartb.fs.s2.file.app.utils.toJson
+import io.minio.GetBucketPolicyArgs
 import io.minio.GetObjectArgs
 import io.minio.GetObjectResponse
 import io.minio.ListObjectsArgs
@@ -8,6 +12,7 @@ import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
 import io.minio.Result
+import io.minio.SetBucketPolicyArgs
 import io.minio.StatObjectArgs
 import io.minio.StatObjectResponse
 import io.minio.errors.ErrorResponseException
@@ -88,5 +93,21 @@ class S3Service(
                 throw e
             }
         }
+    }
+
+    fun getBucketPolicy(): Policy {
+        return GetBucketPolicyArgs.builder()
+            .bucket(s3Config.bucket)
+            .build()
+            .let(minioClient::getBucketPolicy)
+            .parseJsonTo(Policy::class.java)
+    }
+
+    fun setBucketPolicy(policy: Policy) {
+        SetBucketPolicyArgs.builder()
+            .bucket(s3Config.bucket)
+            .config(policy.toJson())
+            .build()
+            .let(minioClient::setBucketPolicy)
     }
 }

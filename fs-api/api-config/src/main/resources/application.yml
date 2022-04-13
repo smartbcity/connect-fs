@@ -22,6 +22,17 @@ fs:
     signerName: ${ssm.signer.admin.name}
     signerFile: ${ssm.signer.admin.key}
 
+ssm:
+  couchdb:
+    serviceName: fs
+  signer:
+    user:
+      name: ssm-admin
+      key: user/ssm-admin
+    admin:
+      name: ssm-admin
+      key: user/ssm-admin
+
 ---
 spring:
   config:
@@ -36,13 +47,6 @@ fs:
       - important
 
 #ssm:
-#  signer:
-#    user:
-#      name: ssm-admin
-#      key: user/ssm-admin
-#    admin:
-#      name: ssm-admin
-#      key: user/ssm-admin
 #  couchdb:
 #    url: http://localhost:5984
 #    username: couchdb

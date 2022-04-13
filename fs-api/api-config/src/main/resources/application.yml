@@ -23,8 +23,6 @@ fs:
     signerFile: ${ssm.signer.admin.key}
 
 ssm:
-  couchdb:
-    serviceName: fs
   signer:
     user:
       name: ssm-admin

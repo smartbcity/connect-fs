@@ -12,6 +12,7 @@ object PluginVersions {
 
 object Versions {
 	val f2 = PluginVersions.fixers
+	val i2 = PluginVersions.fixers
 	val s2 = PluginVersions.fixers
 	val ssm = PluginVersions.fixers
 

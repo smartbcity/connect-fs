@@ -5,6 +5,5 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-autoconfigure:${city.smartb.gradle.dependencies.FixersVersions.Spring.boot}")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:${city.smartb.gradle.dependencies.FixersVersions.Spring.boot}")
+    implementation("city.smartb.i2:i2-spring-boot-starter-auth:${Versions.i2}")
 }

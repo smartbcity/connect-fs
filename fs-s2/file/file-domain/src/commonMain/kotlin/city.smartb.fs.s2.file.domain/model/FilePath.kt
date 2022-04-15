@@ -2,15 +2,26 @@ package city.smartb.fs.s2.file.domain.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
+import kotlin.js.JsName
+
+@JsExport
+@JsName("FilePathDTO")
+interface FilePathDTO {
+    val objectType: String
+    val objectId: String
+    val directory: String
+    val name: String
+}
 
 @Serializable
 @SerialName("FilePath")
 data class FilePath(
-    val objectType: String,
-    val objectId: String,
-    val directory: String,
-    val name: String
-) {
+    override val objectType: String,
+    override val objectId: String,
+    override val directory: String,
+    override val name: String
+): FilePathDTO {
     companion object {
         fun from(path: String): FilePath {
             val (objectType, objectId, directory, name) = path.split("/", limit = 4)

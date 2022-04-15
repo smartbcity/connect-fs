@@ -8,8 +8,9 @@ typealias FileInitPublicDirectoryFunction = F2Function<FileInitPublicDirectoryCo
 
 @Serializable
 data class FileInitPublicDirectoryCommand(
+	val objectType: String,
 	val objectId: String,
-	val category: String?
+	val directory: String
 )
 
 @Serializable

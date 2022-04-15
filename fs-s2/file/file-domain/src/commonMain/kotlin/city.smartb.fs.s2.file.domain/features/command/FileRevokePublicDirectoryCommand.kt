@@ -8,8 +8,9 @@ typealias FileRevokePublicDirectoryFunction = F2Function<FileRevokePublicDirecto
 
 @Serializable
 data class FileRevokePublicDirectoryCommand(
+	val objectType: String,
 	val objectId: String,
-	val category: String?
+	val directory: String
 )
 
 @Serializable

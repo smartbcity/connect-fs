@@ -18,9 +18,10 @@ class FileModelView: View<FileEvent, FileEntity> {
 
 	private fun created(event: FileInitiatedEvent) = FileEntity(
 		id = event.id,
-		name = event.name,
-		objectId = event.objectId,
-		category = event.category,
+		name = event.path.name,
+		objectType = event.path.objectType,
+		objectId = event.path.objectId,
+		directory = event.path.directory,
 		metadata = event.metadata,
 		uploadDate = event.time,
 		status = FileState.Exists
@@ -28,9 +29,10 @@ class FileModelView: View<FileEvent, FileEntity> {
 
 
 	private fun FileEntity.logged(event: FileLoggedEvent) = copy(
-		name = event.name,
-		objectId = event.objectId,
-		category = event.category,
+		name = event.path.name,
+		objectType = event.path.objectType,
+		objectId = event.path.objectId,
+		directory = event.path.directory,
 		metadata = event.metadata,
 		uploadDate = event.time
 	)

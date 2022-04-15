@@ -9,8 +9,9 @@ typealias FileGetListFunction = F2Function<FileGetListCommand, FileGetListResult
 
 @Serializable
 data class FileGetListCommand(
+    val objectType: String,
     val objectId: String,
-    val category: String?
+    val directory: String?
 )
 
 @Serializable

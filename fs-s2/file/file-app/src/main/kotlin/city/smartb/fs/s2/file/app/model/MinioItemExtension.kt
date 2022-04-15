@@ -1,20 +1,17 @@
 package city.smartb.fs.s2.file.app.model
 
-import city.smartb.fs.s2.file.app.utils.FilePathUtils
 import city.smartb.fs.s2.file.domain.model.File
+import city.smartb.fs.s2.file.domain.model.FilePath
 import io.minio.messages.Item
 
-fun Item.toFile(buildFullPath: (String) -> String): File {
+fun Item.toFile(buildUrl: (FilePath) -> String): File {
     val metadata = sanitizedMetadata()
-    val path = objectName()
-    val (objectId, category, name) = FilePathUtils.parseRelativePath(path)
+    val path = FilePath.from(objectName())
 
     return File(
         id = metadata[File::id.name]!!,
-        name = name,
-        objectId = objectId,
-        category = category,
-        url = buildFullPath(path),
+        path = path,
+        url = buildUrl(path),
         metadata = metadata
     )
 }

@@ -8,8 +8,9 @@ import s2.dsl.automate.model.WithS2State
 data class FileEntity(
     val id: FileId,
     val name: String,
+    val objectType: String,
     val objectId: String,
-    val category: String?,
+    val directory: String,
     val metadata: Map<String, String>,
     val uploadDate: Long,
     val status: FileState

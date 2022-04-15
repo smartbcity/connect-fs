@@ -18,5 +18,5 @@ class FsSsmConfig(
     val chaincode: String,
     val signerName: String,
     val signerFile: String,
-    val categories: List<String>?
+    val directories: List<String>?
 )

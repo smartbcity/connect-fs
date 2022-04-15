@@ -8,9 +8,7 @@ import kotlinx.serialization.Serializable
 @SerialName("File")
 data class File(
     val id: FileId,
-    val name: String,
-    val objectId: String,
-    val category: String?,
+    val path: FilePath,
     val url: String,
     val metadata: Map<String, String>
 )

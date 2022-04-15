@@ -8,7 +8,6 @@ import city.smartb.fs.s2.file.app.model.Statement
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
-import city.smartb.fs.s2.file.app.utils.FilePathUtils
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -27,6 +26,7 @@ import city.smartb.fs.s2.file.domain.features.query.FileGetListFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
 import city.smartb.fs.s2.file.domain.model.File
+import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.f2Function
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -44,11 +44,7 @@ class FileEndpoint(
 
     @Bean
     fun getFile(): FileGetFunction = f2Function { query ->
-        val path = FilePathUtils.buildRelativePath(
-            objectId = query.objectId,
-            category = query.category,
-            name = query.name
-        )
+        val path = query.toString()
         val metadata = s3Service.getObjectMetadata(path)
             ?: return@f2Function FileGetResult(null, null)
 
@@ -59,10 +55,13 @@ class FileEndpoint(
         FileGetResult(
             file = File(
                 id = metadata["id"].orEmpty(),
-                name = query.name,
-                objectId = query.objectId,
-                category = query.category,
-                url = buildUrl(path),
+                path = FilePath(
+                    objectType = query.objectType,
+                    objectId = query.objectId,
+                    directory = query.directory,
+                    name = query.name,
+                ),
+                url = query.buildUrl(),
                 metadata = metadata
             ),
             content = content
@@ -71,48 +70,44 @@ class FileEndpoint(
 
     @Bean
     fun listFiles(): FileGetListFunction = f2Function { query ->
-        val prefix = FilePathUtils.buildRelativePath(
+        val prefix = FilePath(
+            objectType = query.objectType,
             objectId = query.objectId,
-            category = query.category,
+            directory = query.directory ?: "",
             name = ""
-        )
+        ).toPartialPrefix()
+
         s3Service.listObjects(prefix)
-            .map { obj -> obj.get().toFile(::buildUrl) }
+            .map { obj -> obj.get().toFile { it.buildUrl() } }
             .let(::FileGetListResult)
     }
 
     @Bean
     fun uploadFile(): FileUploadFunction = f2Function { cmd ->
-        val path = FilePathUtils.buildRelativePath(
-            objectId = cmd.objectId,
-            category = cmd.category,
-            name = cmd.name
-        )
+        val pathStr = cmd.path.toString()
 
-        val fileMetadata = s3Service.getObjectMetadata(path)
+        val fileMetadata = s3Service.getObjectMetadata(pathStr)
         val fileExists = fileMetadata != null
         val fileId = fileMetadata?.get("id") ?: UUID.randomUUID().toString()
 
         val fileByteArray = cmd.content.decodeB64()
         s3Service.putObject(
-            path = path,
+            path = pathStr,
             content = fileByteArray,
             metadata = cmd.metadata.plus("id" to fileId)
         )
 
-        if (mustBeSavedToSsm(cmd.category)) {
+        if (mustBeSavedToSsm(cmd.path.directory)) {
             if (fileExists) {
-                fileByteArray.logFileInSsm(cmd, fileId, buildUrl(path))
+                fileByteArray.logFileInSsm(cmd, fileId, cmd.path.buildUrl())
             } else {
-                fileByteArray.initFileInSsm(cmd, fileId, buildUrl(path))
+                fileByteArray.initFileInSsm(cmd, fileId, cmd.path.buildUrl())
             }
         } else {
             FileUploadedEvent(
                 id = fileId,
-                name = cmd.name,
-                objectId = cmd.objectId,
-                category = cmd.category,
-                url = buildUrl(path),
+                path = cmd.path,
+                url = cmd.path.buildUrl(),
                 hash = fileByteArray.hash(),
                 metadata = cmd.metadata,
                 time = System.currentTimeMillis()
@@ -122,19 +117,14 @@ class FileEndpoint(
 
     @Bean
     fun deleteFile(): FileDeleteFunction = f2Function { cmd ->
-        val path = FilePathUtils.buildRelativePath(
-            objectId = cmd.objectId,
-            category = cmd.category,
-            name = cmd.name
-        )
-
-        val metadata = s3Service.getObjectMetadata(path)
-            ?: throw IllegalArgumentException("File not found at path [$path]")
+        val pathStr = cmd.toString()
+        val metadata = s3Service.getObjectMetadata(pathStr)
+            ?: throw IllegalArgumentException("File not found at path [$pathStr]")
 
         val id = metadata["id"]!!
 
-        s3Service.removeObject(path)
-        if (mustBeSavedToSsm(cmd.category)) {
+        s3Service.removeObject(pathStr)
+        if (mustBeSavedToSsm(cmd.directory)) {
             fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
         }
 
@@ -143,11 +133,12 @@ class FileEndpoint(
 
     @Bean
     fun initPublicDirectory(): FileInitPublicDirectoryFunction = f2Function { cmd ->
-        val path = FilePathUtils.buildRelativePath(
+        val path = FilePath(
+            objectType = cmd.objectType,
             objectId = cmd.objectId,
-            category = cmd.category,
+            directory = cmd.directory,
             name = "*"
-        )
+        ).toString()
 
         val policy = s3Service.getBucketPolicy()
         policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
@@ -161,11 +152,12 @@ class FileEndpoint(
 
     @Bean
     fun revokePublicDirectory(): FileRevokePublicDirectoryFunction = f2Function { cmd ->
-        val path = FilePathUtils.buildRelativePath(
+        val path = FilePath(
+            objectType = cmd.objectType,
             objectId = cmd.objectId,
-            category = cmd.category,
+            directory = cmd.directory,
             name = "*"
-        )
+        ).toString()
 
         val policy = s3Service.getBucketPolicy()
         policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
@@ -177,15 +169,13 @@ class FileEndpoint(
         )
     }
 
-    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.categories.orEmpty()
+    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.directories.orEmpty()
 
     private suspend fun ByteArray.initFileInSsm(cmd: FileUploadCommand, fileId: FileId, path: String): FileUploadedEvent {
         return FileInitCommand(
             id = fileId,
-            name = cmd.name,
-            objectId = cmd.objectId,
-            category = cmd.category,
-            path = path,
+            path = cmd.path,
+            url = path,
             hash = hash(),
             metadata = cmd.metadata,
         ).let { fileDeciderSourcingImpl.init(it).toFileUploadedEvent() }
@@ -208,5 +198,5 @@ class FileEndpoint(
     private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
     private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
-    private fun buildUrl(path: String) = FilePathUtils.buildAbsolutePath(path, s3Config.externalUrl, s3Config.bucket, s3Config.dns)
+    private fun FilePath.buildUrl() = buildUrl(s3Config.externalUrl, s3Config.bucket, s3Config.dns)
 }

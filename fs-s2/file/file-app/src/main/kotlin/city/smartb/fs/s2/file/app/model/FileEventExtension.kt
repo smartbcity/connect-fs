@@ -6,10 +6,8 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 
 fun FileInitiatedEvent.toFileUploadedEvent() = FileUploadedEvent(
     id = id,
-    name = name,
-    objectId = objectId,
-    category = category,
-    url = path,
+    path = path,
+    url = url,
     hash = hash,
     metadata = metadata,
     time = time
@@ -17,10 +15,8 @@ fun FileInitiatedEvent.toFileUploadedEvent() = FileUploadedEvent(
 
 fun FileLoggedEvent.toFileUploadedEvent() = FileUploadedEvent(
     id = id,
-    name = name,
-    objectId = objectId,
-    category = category,
-    url = path,
+    path = path,
+    url = url,
     hash = hash,
     metadata = metadata,
     time = time

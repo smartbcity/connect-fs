@@ -41,7 +41,7 @@ fs:
   s3:
     username: minio
   ssm:
-    categories:
+    directories:
       - important
 
 #ssm:

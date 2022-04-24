@@ -15,6 +15,7 @@ object Versions {
 	val i2 = PluginVersions.fixers
 	val s2 = PluginVersions.fixers
 	val ssm = PluginVersions.fixers
+	val ktor = "2.0.0"
 
 	const val springBoot = PluginVersions.springBoot
 	const val minio = "8.3.7"
@@ -45,5 +46,13 @@ object Dependencies {
 	fun junit(scope: Scope) = FixersDependencies.Jvm.Test.junit(scope)
 	fun cucumber(scope: Scope) = FixersDependencies.Jvm.Test.cucumber(scope)
 
-	fun ktor(scope: Scope) = FixersDependencies.Jvm.Kotlin.ktorClient(scope)
+	//TODO REPLACE BY F2-CLient
+	fun ktor(scope: Scope) = scope.add(
+		"io.ktor:ktor-client-core:${Versions.ktor}",
+		"io.ktor:ktor-client-content-negotiation:${Versions.ktor}",
+		"io.ktor:ktor-client-cio:${Versions.ktor}",
+		"io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}",
+		"io.ktor:ktor-serialization-jackson:${Versions.ktor}"
+	)
+
 }

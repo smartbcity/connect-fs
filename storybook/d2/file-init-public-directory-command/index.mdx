@@ -1,0 +1,14 @@
+import { CodeHighlighter, DescriptedCode } from '@smartb/g2-documentation'
+import FileInitPublicDirectoryCommandDesc from './desc.md'
+import FileInitPublicDirectoryCommandVisualJson from './visualJson.json'
+
+<DescriptedCode
+  leftElement={<FileInitPublicDirectoryCommandDesc />}
+  rightElement={
+    <CodeHighlighter
+      object={FileInitPublicDirectoryCommandVisualJson}
+      language={"json"}
+      title={"Example"}
+    />
+  }
+/>

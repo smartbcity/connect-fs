@@ -1,0 +1,14 @@
+import { CodeHighlighter, DescriptedCode } from '@smartb/g2-documentation'
+import FileRevokePublicDirectoryCommandDesc from './desc.md'
+import FileRevokePublicDirectoryCommandVisualJson from './visualJson.json'
+
+<DescriptedCode
+  leftElement={<FileRevokePublicDirectoryCommandDesc />}
+  rightElement={
+    <CodeHighlighter
+      object={FileRevokePublicDirectoryCommandVisualJson}
+      language={"json"}
+      title={"Example"}
+    />
+  }
+/>

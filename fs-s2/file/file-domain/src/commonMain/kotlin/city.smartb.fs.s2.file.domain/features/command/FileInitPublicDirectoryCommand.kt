@@ -5,8 +5,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
+ * Grant public access to a given directory.
  * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommand]
+ * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @order 30
  */
 typealias FileInitPublicDirectoryFunction = F2Function<FileInitPublicDirectoryCommand, FilePublicDirectoryInitializedEvent>
 
@@ -16,13 +18,26 @@ typealias FileInitPublicDirectoryFunction = F2Function<FileInitPublicDirectoryCo
  */
 @Serializable
 data class FileInitPublicDirectoryCommand(
-	val objectType: String,
-	val objectId: String,
-	val directory: String
+    /**
+     * Type of object the directory is attached to.
+     * @example "*"
+     */
+    val objectType: String,
+
+    /**
+     * Identifier of the object the directory is attached to.
+     * @example "*"
+     */
+    val objectId: String,
+
+    /**
+     * Directory to revoke public access from.
+     * @example [city.smartb.fs.s2.file.domain.model.FilePath.directory]
+     */
+    val directory: String
 )
 
 /**
- * Result of the file public directory initialize command.
  * @d2 event
  * @parent [FileInitPublicDirectoryFunction]
  */

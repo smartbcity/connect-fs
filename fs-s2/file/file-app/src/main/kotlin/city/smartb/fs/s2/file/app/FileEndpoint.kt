@@ -35,8 +35,8 @@ import java.util.Base64
 import java.util.UUID
 
 /**
- * @d2 model
- * @parent [city.smartb.fs.s2.file.app.D2FileEndpointPage]
+ * @d2 service
+ * @title File/Entrypoints
  */
 @Configuration
 class FileEndpoint(
@@ -46,6 +46,9 @@ class FileEndpoint(
     private val s3Service: S3Service,
 ) {
 
+    /**
+     * Fetch a given file descriptor and content
+     */
     @Bean
     fun fileGet(): FileGetFunction = f2Function { query ->
         val path = query.toString()
@@ -72,6 +75,9 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Fetch a list of file descriptors
+     */
     @Bean
     fun fileList(): FileListFunction = f2Function { query ->
         val prefix = FilePath(
@@ -86,6 +92,9 @@ class FileEndpoint(
             .let(::FileListResult)
     }
 
+    /**
+     * Upload a file
+     */
     @Bean
     fun fileUpload(): FileUploadFunction = f2Function { cmd ->
         val pathStr = cmd.path.toString()
@@ -119,6 +128,9 @@ class FileEndpoint(
         }
     }
 
+    /**
+     * Delete a file
+     */
     @Bean
     fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
         val pathStr = cmd.toString()
@@ -138,6 +150,9 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Grant public access to a given directory
+     */
     @Bean
     fun initPublicDirectory(): FileInitPublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(
@@ -157,6 +172,9 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Revoke public access to a given directory
+     */
     @Bean
     fun revokePublicDirectory(): FileRevokePublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(

@@ -5,8 +5,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
+ * Revoke public access from a given directory.
  * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommand]
+ * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @order 40
  */
 typealias FileRevokePublicDirectoryFunction = F2Function<FileRevokePublicDirectoryCommand, FilePublicDirectoryRevokedEvent>
 
@@ -17,8 +19,22 @@ typealias FileRevokePublicDirectoryFunction = F2Function<FileRevokePublicDirecto
  */
 @Serializable
 data class FileRevokePublicDirectoryCommand(
+	/**
+	 * Type of object the directory is attached to.
+	 * @example "*"
+	 */
 	val objectType: String,
+
+	/**
+	 * Identifier of the object the directory is attached to.
+	 * @example "*"
+	 */
 	val objectId: String,
+
+	/**
+	 * Directory to grant public access to.
+	 * @example [city.smartb.fs.s2.file.domain.model.FilePath.directory]
+	 */
 	val directory: String
 )
 

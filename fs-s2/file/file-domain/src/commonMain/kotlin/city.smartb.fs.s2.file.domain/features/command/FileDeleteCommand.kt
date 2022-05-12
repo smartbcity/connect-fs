@@ -8,24 +8,25 @@ import kotlinx.serialization.Serializable
 import s2.dsl.automate.S2Command
 
 /**
+ * Delete a given file.
  * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommand]
+ * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @order 20
  */
 typealias FileDeleteFunction = F2Function<FileDeleteCommand, FileDeletedEvent>
-
-typealias FileDeleteCommand = FilePath
 
 /**
  * @d2 command
  * @parent [FileDeleteFunction]
  */
+typealias FileDeleteCommand = FilePath
+
 @Serializable
 data class FileDeleteByIdCommand(
 	override val id: FileId
 ): S2Command<FileId>
 
 /**
- * Result of the file delete command.
  * @d2 event
  * @parent [FileDeleteFunction]
  */
@@ -33,9 +34,13 @@ data class FileDeleteByIdCommand(
 @SerialName("FileDeletedEvent")
 data class FileDeletedEvent(
 	/**
-	 * @example "7d895444-60d1-4df7-b112-8ecc973cb886"
+	 * Identifier of the deleted file.
 	 */
 	val id: FileId,
+
+	/**
+	 * Path of the deleted file.
+	 */
 	val path: FilePath
 ): FileEvent {
 	override fun s2Id() = id

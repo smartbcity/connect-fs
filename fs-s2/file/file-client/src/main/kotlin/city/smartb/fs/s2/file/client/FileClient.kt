@@ -8,48 +8,26 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
-import city.smartb.fs.s2.file.domain.features.query.FileGetListCommand
-import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
 import city.smartb.fs.s2.file.domain.features.query.FileGetQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
+import city.smartb.fs.s2.file.domain.features.query.FileListCommand
+import city.smartb.fs.s2.file.domain.features.query.FileListResult
 
-/**
- * @d2 model
- * @parent [city.smartb.fs.s2.file.client.D2FileClientSection]
- */
 class FileClient(
     url: String
 ): Client(url) {
-    /**
-     * Fetch specific file from a bucket
-     */
-    suspend fun getFile(command: List<FileGetQuery>): List<FileGetResult> = post("getFile", command)
+    suspend fun fileGet(command: List<FileGetQuery>): List<FileGetResult> = post("fileGet", command)
 
-    /**
-     * Fetch the list of files from a bucket
-     */
-    suspend fun listFiles(command: List<FileGetListCommand>): List<FileGetListResult> = post("listFiles", command)
+    suspend fun fileList(command: List<FileListCommand>): List<FileListResult> = post("fileList", command)
 
-    /**
-     * Upload the file to a S3 bucket
-     */
-    suspend fun uploadFile(command: List<FileUploadCommand>): List<FileUploadedEvent> = post("uploadFile", command)
+    suspend fun fileUpload(command: List<FileUploadCommand>): List<FileUploadedEvent> = post("fileUpload", command)
 
-    /**
-     * Delete the file from S3 bucket
-     */
-    suspend fun deleteFile(command: List<FileDeleteCommand>): List<FileDeletedEvent> = post("deleteFile", command)
+    suspend fun fileDelete(command: List<FileDeleteCommand>): List<FileDeletedEvent> = post("fileDelete", command)
 
-    /**
-     * Create the public directory
-     */
     suspend fun initPublicDirectory(
         command: List<FileInitPublicDirectoryCommand>
     ): List<FilePublicDirectoryInitializedEvent> = post("initPublicDirectory", command)
 
-    /**
-     * Revoke the public directory
-     */
     suspend fun revokePublicDirectory(
         command: List<FileRevokePublicDirectoryCommand>
     ): List<FilePublicDirectoryRevokedEvent> = post("revokePublicDirectory", command)

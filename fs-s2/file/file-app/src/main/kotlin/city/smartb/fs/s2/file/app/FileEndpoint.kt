@@ -22,9 +22,9 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
-import city.smartb.fs.s2.file.domain.features.query.FileGetListFunction
-import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
+import city.smartb.fs.s2.file.domain.features.query.FileListFunction
+import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.f2Function
@@ -47,7 +47,7 @@ class FileEndpoint(
 ) {
 
     @Bean
-    fun getFile(): FileGetFunction = f2Function { query ->
+    fun fileGet(): FileGetFunction = f2Function { query ->
         val path = query.toString()
         val metadata = s3Service.getObjectMetadata(path)
             ?: return@f2Function FileGetResult(null, null)
@@ -73,7 +73,7 @@ class FileEndpoint(
     }
 
     @Bean
-    fun listFiles(): FileGetListFunction = f2Function { query ->
+    fun fileList(): FileListFunction = f2Function { query ->
         val prefix = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
@@ -83,11 +83,11 @@ class FileEndpoint(
 
         s3Service.listObjects(prefix)
             .map { obj -> obj.get().toFile { it.buildUrl() } }
-            .let(::FileGetListResult)
+            .let(::FileListResult)
     }
 
     @Bean
-    fun uploadFile(): FileUploadFunction = f2Function { cmd ->
+    fun fileUpload(): FileUploadFunction = f2Function { cmd ->
         val pathStr = cmd.path.toString()
 
         val fileMetadata = s3Service.getObjectMetadata(pathStr)
@@ -120,7 +120,7 @@ class FileEndpoint(
     }
 
     @Bean
-    fun deleteFile(): FileDeleteFunction = f2Function { cmd ->
+    fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
         val pathStr = cmd.toString()
         val metadata = s3Service.getObjectMetadata(pathStr)
             ?: throw IllegalArgumentException("File not found at path [$pathStr]")

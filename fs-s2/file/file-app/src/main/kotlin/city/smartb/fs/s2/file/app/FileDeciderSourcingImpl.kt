@@ -43,7 +43,13 @@ class FileDeciderSourcingImpl(
 
 	override suspend fun delete(cmd: FileDeleteByIdCommand): FileDeletedEvent = decider.transition(cmd) { file ->
 		FileDeletedEvent(
-			id = file.id
+			id = file.id,
+			path = FilePath(
+				objectType = file.objectType,
+				objectId = file.objectId,
+				directory = file.directory,
+				name = file.name
+			)
 		)
 	}
 

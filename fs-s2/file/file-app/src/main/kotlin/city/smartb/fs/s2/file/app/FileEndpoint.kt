@@ -128,7 +128,10 @@ class FileEndpoint(
             fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
         }
 
-        FileDeletedEvent(id = id)
+        FileDeletedEvent(
+            id = id,
+            path = cmd
+        )
     }
 
     @Bean

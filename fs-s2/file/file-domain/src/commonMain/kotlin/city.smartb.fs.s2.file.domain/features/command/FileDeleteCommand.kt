@@ -19,7 +19,8 @@ data class FileDeleteByIdCommand(
 @Serializable
 @SerialName("FileDeletedEvent")
 data class FileDeletedEvent(
-	val id: FileId
+	val id: FileId,
+	val path: FilePath
 ): FileEvent {
 	override fun s2Id() = id
 }

@@ -34,6 +34,10 @@ import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
 
+/**
+ * @d2 model
+ * @parent [city.smartb.fs.s2.file.app.D2FileEndpointPage]
+ */
 @Configuration
 class FileEndpoint(
     private val fileDeciderSourcingImpl: FileDeciderSourcingImpl,

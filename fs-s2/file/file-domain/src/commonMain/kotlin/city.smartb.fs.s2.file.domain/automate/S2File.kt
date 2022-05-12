@@ -8,6 +8,12 @@ import s2.dsl.automate.S2Role
 import s2.dsl.automate.S2State
 import s2.dsl.automate.builder.s2
 
+/**
+ * The file id
+ *
+ * @d2 model
+ * @parent [city.smartb.fs.s2.file.domain.D2FileModelSection]
+ */
 typealias FileId = String
 
 object S2 {

@@ -5,7 +5,7 @@ import city.smartb.gradle.dependencies.add
 
 object PluginVersions {
 	val fixers = FixersPluginVersions.fixers
-	const val d2 = "experimental-SNAPSHOT"
+	const val d2 = "0.8.0"
 	const val kotlin = FixersPluginVersions.kotlin
 	const val springBoot = FixersPluginVersions.springBoot
 }
@@ -24,6 +24,7 @@ object Versions {
 object Repo {
 	val snapshot: List<String> = listOf(
 		// For fixers
+		"https://oss.sonatype.org/service/local/repositories/releases/content",
 		"https://oss.sonatype.org/content/repositories/snapshots",
 		//For pdfbox
 		"https://jitpack.io"

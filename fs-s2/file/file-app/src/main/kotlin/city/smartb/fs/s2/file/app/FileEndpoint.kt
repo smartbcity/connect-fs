@@ -1,5 +1,6 @@
 package city.smartb.fs.s2.file.app
 
+import city.smartb.fs.api.config.Roles
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
 import city.smartb.fs.s2.file.app.model.S3Action
@@ -34,6 +35,7 @@ import s2.spring.utils.logger.Logger
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
+import javax.annotation.security.RolesAllowed
 
 /**
  * @d2 service
@@ -51,6 +53,7 @@ class FileEndpoint(
     /**
      * Fetch a given file descriptor and content
      */
+    @RolesAllowed(Roles.READ_FILE)
     @Bean
     fun fileGet(): FileGetFunction = f2Function { query ->
         val path = query.toString()
@@ -82,6 +85,7 @@ class FileEndpoint(
     /**
      * Fetch a list of file descriptors
      */
+    @RolesAllowed(Roles.READ_FILE)
     @Bean
     fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
@@ -100,6 +104,7 @@ class FileEndpoint(
     /**
      * Upload a file
      */
+    @RolesAllowed(Roles.WRITE_FILE)
     @Bean
     fun fileUpload(): FileUploadFunction = f2Function { cmd ->
         val pathStr = cmd.path.toString()
@@ -137,6 +142,7 @@ class FileEndpoint(
     /**
      * Delete a file
      */
+    @RolesAllowed(Roles.WRITE_FILE)
     @Bean
     fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
         val pathStr = cmd.toString()
@@ -161,6 +167,7 @@ class FileEndpoint(
     /**
      * Grant public access to a given directory
      */
+    @RolesAllowed(Roles.WRITE_POLICY)
     @Bean
     fun initPublicDirectory(): FileInitPublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(
@@ -184,6 +191,7 @@ class FileEndpoint(
     /**
      * Revoke public access to a given directory
      */
+    @RolesAllowed(Roles.WRITE_POLICY)
     @Bean
     fun revokePublicDirectory(): FileRevokePublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(

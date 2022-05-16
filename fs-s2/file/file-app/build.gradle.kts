@@ -9,6 +9,7 @@ dependencies {
 
 	implementation("io.minio:minio:${Versions.minio}")
 	implementation("city.smartb.s2:s2-spring-boot-starter-sourcing-ssm:${Versions.s2}")
+	implementation("city.smartb.s2:s2-spring-boot-starter-utils-logger:${Versions.s2}")
 
 	Dependencies.springRedis(::implementation)
 	Dependencies.springTest(::testImplementation)

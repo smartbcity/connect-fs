@@ -30,6 +30,7 @@ import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.f2Function
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import s2.spring.utils.logger.Logger
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
@@ -45,6 +46,7 @@ class FileEndpoint(
     private val s3Config: S3Config,
     private val s3Service: S3Service,
 ) {
+    private val logger by Logger()
 
     /**
      * Fetch a given file descriptor and content
@@ -52,6 +54,8 @@ class FileEndpoint(
     @Bean
     fun fileGet(): FileGetFunction = f2Function { query ->
         val path = query.toString()
+        logger.info("fileGet: $path")
+
         val metadata = s3Service.getObjectMetadata(path)
             ?: return@f2Function FileGetResult(null, null)
 
@@ -80,6 +84,7 @@ class FileEndpoint(
      */
     @Bean
     fun fileList(): FileListFunction = f2Function { query ->
+        logger.info("fileList: $query")
         val prefix = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
@@ -98,6 +103,7 @@ class FileEndpoint(
     @Bean
     fun fileUpload(): FileUploadFunction = f2Function { cmd ->
         val pathStr = cmd.path.toString()
+        logger.info("fileUpload: $pathStr")
 
         val fileMetadata = s3Service.getObjectMetadata(pathStr)
         val fileExists = fileMetadata != null
@@ -134,6 +140,8 @@ class FileEndpoint(
     @Bean
     fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
         val pathStr = cmd.toString()
+        logger.info("fileDelete: $pathStr")
+
         val metadata = s3Service.getObjectMetadata(pathStr)
             ?: throw IllegalArgumentException("File not found at path [$pathStr]")
 
@@ -161,6 +169,7 @@ class FileEndpoint(
             directory = cmd.directory,
             name = "*"
         ).toString()
+        logger.info("initPublicDirectory: $path")
 
         val policy = s3Service.getBucketPolicy()
         policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
@@ -183,6 +192,7 @@ class FileEndpoint(
             directory = cmd.directory,
             name = "*"
         ).toString()
+        logger.info("revokePublicDirectory: $path")
 
         val policy = s3Service.getBucketPolicy()
         policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)

@@ -1,11 +1,10 @@
 include:
   - project: 'fixers/cicd'
     file: 'make/.gitlab-ci.yml'
-  - project: 'fixers/cicd'
-      file: 'fixers/.gitlab-ci-docs.yml'
 
 stages:
   - package
+  - docs
 
 api:
   stage: package
@@ -13,3 +12,10 @@ api:
     - .make
   variables:
     MAKE_TARGET: package
+
+docs:
+  stage: docs
+  extends:
+    - .make
+  variables:
+    MAKE_TARGET: docs

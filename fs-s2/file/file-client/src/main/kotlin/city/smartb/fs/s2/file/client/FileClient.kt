@@ -10,7 +10,7 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileGetQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
-import city.smartb.fs.s2.file.domain.features.query.FileListCommand
+import city.smartb.fs.s2.file.domain.features.query.FileListQuery
 import city.smartb.fs.s2.file.domain.features.query.FileListResult
 
 class FileClient(
@@ -18,7 +18,7 @@ class FileClient(
 ): Client(url) {
     suspend fun fileGet(command: List<FileGetQuery>): List<FileGetResult> = post("fileGet", command)
 
-    suspend fun fileList(command: List<FileListCommand>): List<FileListResult> = post("fileList", command)
+    suspend fun fileList(command: List<FileListQuery>): List<FileListResult> = post("fileList", command)
 
     suspend fun fileUpload(command: List<FileUploadCommand>): List<FileUploadedEvent> = post("fileUpload", command)
 

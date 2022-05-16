@@ -11,14 +11,14 @@ import kotlinx.serialization.Serializable
  * @parent [city.smartb.fs.s2.file.domain.D2FileQuerySection]
  * @order 20
  */
-typealias FileListFunction = F2Function<FileListCommand, FileListResult>
+typealias FileListFunction = F2Function<FileListQuery, FileListResult>
 
 /**
  * @d2 query
  * @parent [FileListFunction]
  */
 @Serializable
-data class FileListCommand(
+data class FileListQuery(
     /**
      * Type of object the file are attached to.
      * @example [city.smartb.fs.s2.file.domain.model.FilePath.objectType]

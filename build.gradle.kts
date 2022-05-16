@@ -5,11 +5,9 @@ plugins {
 	kotlin("kapt") version PluginVersions.kotlin apply false
 
 	id("org.springframework.boot") version PluginVersions.springBoot apply false
-
 	id("city.smartb.fixers.gradle.config") version PluginVersions.fixers
 	id("city.smartb.fixers.gradle.sonar") version PluginVersions.fixers
 	id("city.smartb.fixers.gradle.d2") version PluginVersions.d2
-
 }
 
 allprojects {
@@ -24,15 +22,15 @@ allprojects {
 	}
 }
 
-subprojects {
-	plugins.withType(city.smartb.fixers.gradle.config.ConfigPlugin::class.java).whenPluginAdded {
-		fixers {
-			bundle {
-				id = "fs"
-				name = "Connect FileSystem"
-				description = "File manager"
-				url = "https://gitlab.smartb.city/connect/fs"
-			}
-		}
+fixers {
+	bundle {
+		id = "fs"
+		name = "Connect FileSystem"
+		description = "File manager"
+		url = "https://gitlab.smartb.city/connect/fs"
+	}
+	d2 {
+		outputDirectory = file("storybook/d2/")
 	}
 }
+

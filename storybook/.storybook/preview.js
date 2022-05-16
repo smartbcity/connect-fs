@@ -1,5 +1,5 @@
 import { ThemeContextProvider } from "@smartb/g2-themes";
-import { StorybookCanvas } from "@smartb/storybook-documentation";
+import { StorybookCanvas } from "@smartb/g2-storybook-documentation";
 
 import "./default.css";
 

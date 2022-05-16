@@ -1,5 +1,6 @@
 package city.smartb.fs.s2.file.app
 
+import city.smartb.fs.api.config.Roles
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
 import city.smartb.fs.s2.file.app.model.S3Action
@@ -22,18 +23,24 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
-import city.smartb.fs.s2.file.domain.features.query.FileGetListFunction
-import city.smartb.fs.s2.file.domain.features.query.FileGetListResult
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
+import city.smartb.fs.s2.file.domain.features.query.FileListFunction
+import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.f2Function
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import s2.spring.utils.logger.Logger
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
+import javax.annotation.security.RolesAllowed
 
+/**
+ * @d2 service
+ * @title File/Entrypoints
+ */
 @Configuration
 class FileEndpoint(
     private val fileDeciderSourcingImpl: FileDeciderSourcingImpl,
@@ -41,10 +48,17 @@ class FileEndpoint(
     private val s3Config: S3Config,
     private val s3Service: S3Service,
 ) {
+    private val logger by Logger()
 
+    /**
+     * Fetch a given file descriptor and content
+     */
+    @RolesAllowed(Roles.READ_FILE)
     @Bean
-    fun getFile(): FileGetFunction = f2Function { query ->
+    fun fileGet(): FileGetFunction = f2Function { query ->
         val path = query.toString()
+        logger.info("fileGet: $path")
+
         val metadata = s3Service.getObjectMetadata(path)
             ?: return@f2Function FileGetResult(null, null)
 
@@ -68,8 +82,13 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Fetch a list of file descriptors
+     */
+    @RolesAllowed(Roles.READ_FILE)
     @Bean
-    fun listFiles(): FileGetListFunction = f2Function { query ->
+    fun fileList(): FileListFunction = f2Function { query ->
+        logger.info("fileList: $query")
         val prefix = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
@@ -79,12 +98,17 @@ class FileEndpoint(
 
         s3Service.listObjects(prefix)
             .map { obj -> obj.get().toFile { it.buildUrl() } }
-            .let(::FileGetListResult)
+            .let(::FileListResult)
     }
 
+    /**
+     * Upload a file
+     */
+    @RolesAllowed(Roles.WRITE_FILE)
     @Bean
-    fun uploadFile(): FileUploadFunction = f2Function { cmd ->
+    fun fileUpload(): FileUploadFunction = f2Function { cmd ->
         val pathStr = cmd.path.toString()
+        logger.info("fileUpload: $pathStr")
 
         val fileMetadata = s3Service.getObjectMetadata(pathStr)
         val fileExists = fileMetadata != null
@@ -115,9 +139,15 @@ class FileEndpoint(
         }
     }
 
+    /**
+     * Delete a file
+     */
+    @RolesAllowed(Roles.WRITE_FILE)
     @Bean
-    fun deleteFile(): FileDeleteFunction = f2Function { cmd ->
+    fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
         val pathStr = cmd.toString()
+        logger.info("fileDelete: $pathStr")
+
         val metadata = s3Service.getObjectMetadata(pathStr)
             ?: throw IllegalArgumentException("File not found at path [$pathStr]")
 
@@ -134,6 +164,10 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Grant public access to a given directory
+     */
+    @RolesAllowed(Roles.WRITE_POLICY)
     @Bean
     fun initPublicDirectory(): FileInitPublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(
@@ -142,6 +176,7 @@ class FileEndpoint(
             directory = cmd.directory,
             name = "*"
         ).toString()
+        logger.info("initPublicDirectory: $path")
 
         val policy = s3Service.getBucketPolicy()
         policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
@@ -153,6 +188,10 @@ class FileEndpoint(
         )
     }
 
+    /**
+     * Revoke public access to a given directory
+     */
+    @RolesAllowed(Roles.WRITE_POLICY)
     @Bean
     fun revokePublicDirectory(): FileRevokePublicDirectoryFunction = f2Function { cmd ->
         val path = FilePath(
@@ -161,6 +200,7 @@ class FileEndpoint(
             directory = cmd.directory,
             name = "*"
         ).toString()
+        logger.info("revokePublicDirectory: $path")
 
         val policy = s3Service.getBucketPolicy()
         policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)

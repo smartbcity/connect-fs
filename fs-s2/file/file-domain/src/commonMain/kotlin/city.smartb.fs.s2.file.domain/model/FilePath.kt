@@ -8,12 +8,43 @@ import kotlin.js.JsName
 @JsExport
 @JsName("FilePathDTO")
 interface FilePathDTO {
+    /**
+     * Type of object the file is attached to.
+     *
+     * (must not contain any '/')
+     * @example "MyAwesomeObject"
+     */
     val objectType: String
+
+    /**
+     * Identifier of the object the file is attached to.
+     *
+     * (must not contain any '/')
+     * @example "91541047-5da8-4161-af79-3fd367fc014e"
+     */
     val objectId: String
+
+    /**
+     * Directory name.
+     *
+     * (must not contain any '/')
+     * @example "image"
+     */
     val directory: String
+
+    /**
+     * File name.
+     * @example "main.jpg"
+     */
     val name: String
 }
 
+/**
+ * Describe a path to a file within S3
+ * @d2 model
+ * @parent [city.smartb.fs.s2.file.domain.D2FileModelSection]
+ * @order 20
+ */
 @Serializable
 @SerialName("FilePath")
 data class FilePath(

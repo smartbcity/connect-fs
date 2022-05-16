@@ -11,3 +11,10 @@ api:
     - .make
   variables:
     MAKE_TARGET: package
+
+docs:
+  stage: package
+  extends:
+    - .make
+  variables:
+    MAKE_TARGET: docs

@@ -4,7 +4,6 @@ include:
 
 stages:
   - package
-  - docs
 
 api:
   stage: package
@@ -14,7 +13,7 @@ api:
     MAKE_TARGET: package
 
 docs:
-  stage: docs
+  stage: package
   extends:
     - .make
   variables:

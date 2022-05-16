@@ -1594,10 +1594,10 @@
     rehype-sanitize "^4.0.0"
     remark-gfm "^1.0.0"
 
-"@smartb/g2-storybook-documentation@^1.0.0-alpha.32":
-  version "1.0.0-alpha.32"
-  resolved "https://gitlab.smartb.city/api/v4/projects/52/packages/npm/@smartb/g2-storybook-documentation/-/@smartb/g2-storybook-documentation-1.0.0-alpha.32.tgz#bbc6d1f6426fe243845031c7ea2269e094ece23e"
-  integrity sha1-u8bR9kJv4kOEUDHH6iJp4JTs4j4=
+"@smartb/g2-storybook-documentation@^1.0.0-alpha.34":
+  version "1.0.0-alpha.34"
+  resolved "https://gitlab.smartb.city/api/v4/projects/52/packages/npm/@smartb/g2-storybook-documentation/-/@smartb/g2-storybook-documentation-1.0.0-alpha.34.tgz#9c494812531c1519ba60e0d080536ccdf70cc32d"
+  integrity sha1-nElIElMcFRm6YODQgFNszfcMwy0=
   dependencies:
     "@storybook/addon-docs" "^6.3.6"
 
@@ -1610,7 +1610,7 @@
     tinycolor2 "^1.4.2"
     tss-react "^3.3.1"
 
-"@storybook/addon-actions@6.4.22", "@storybook/addon-actions@^6.4.10":
+"@storybook/addon-actions@6.4.22", "@storybook/addon-actions@^6.4.22":
   version "6.4.22"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.4.22.tgz#ec1b4332e76a8021dc0a1375dfd71a0760457588"
   integrity sha512-t2w3iLXFul+R/1ekYxIEzUOZZmvEa7EzUAVAuCHP4i6x0jBnTTZ7sAIUVRaxVREPguH5IqI/2OklYhKanty2Yw==
@@ -1671,7 +1671,7 @@
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-docs@6.4.22", "@storybook/addon-docs@^6.3.6", "@storybook/addon-docs@^6.4.10":
+"@storybook/addon-docs@6.4.22", "@storybook/addon-docs@^6.3.6", "@storybook/addon-docs@^6.4.22":
   version "6.4.22"
   resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-6.4.22.tgz#19f22ede8ae31291069af7ab5abbc23fa269012b"
   integrity sha512-9j+i+W+BGHJuRe4jUrqk6ubCzP4fc1xgFS2o8pakRiZgPn5kUQPdkticmsyh1XeEJifwhqjKJvkEDrcsleytDA==
@@ -1723,7 +1723,7 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/addon-essentials@^6.4.10":
+"@storybook/addon-essentials@^6.4.22":
   version "6.4.22"
   resolved "https://registry.yarnpkg.com/@storybook/addon-essentials/-/addon-essentials-6.4.22.tgz#6981c89e8b315cda7ce93b9bf74e98ca80aec00a"
   integrity sha512-GTv291fqvWq2wzm7MruBvCGuWaCUiuf7Ca3kzbQ/WqWtve7Y/1PDsqRNQLGZrQxkXU0clXCqY1XtkTrtA3WGFQ==
@@ -1743,7 +1743,7 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-links@^6.4.10":
+"@storybook/addon-links@^6.4.22":
   version "6.4.22"
   resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-6.4.22.tgz#c0ed9e9ef6505cf1562e1476bbc5064c82dadbe2"
   integrity sha512-OSOyDnTXnmcplJHlXTYUTMkrfpLqxtHp2R69IXfAyI1e8WNDb79mXflrEXDA/RSNEliLkqYwCyYby7gDMGds5Q==
@@ -2301,7 +2301,7 @@
     react-docgen-typescript "^2.0.0"
     tslib "^2.0.0"
 
-"@storybook/react@^6.4.10":
+"@storybook/react@^6.4.22":
   version "6.4.22"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-6.4.22.tgz#5940e5492bc87268555b47f12aff4be4b67eae54"
   integrity sha512-5BFxtiguOcePS5Ty/UoH7C6odmvBYIZutfiy4R3Ua6FYmtxac5vP9r5KjCz1IzZKT8mCf4X+PuK1YvDrPPROgQ==
@@ -8983,7 +8983,7 @@ storybook-i18n@^1.0.11:
   resolved "https://registry.yarnpkg.com/storybook-i18n/-/storybook-i18n-1.0.11.tgz#21963c8353b9ab68fec0faacdaee15de39b0220e"
   integrity sha512-wHN/93ylrfdxot0MV8sMKWJF4TkJT/XOtuHnUA4CIWrenymC4o33uNcB1sOWa2UiiEqhOK3wJ5gOPOyhgjPjwA==
 
-storybook-react-i18next@^1.0.12:
+storybook-react-i18next@^1.0.20:
   version "1.0.20"
   resolved "https://registry.yarnpkg.com/storybook-react-i18next/-/storybook-react-i18next-1.0.20.tgz#32ebb3f97411496e2d26bdd803488590c4e9747f"
   integrity sha512-5k8enV4gtS4JWdk5cUfPrHODL2P3Xbf0tJXgqjg4etyy1dM8hZjSDIuO7OtKblO6AWjz8YUfJVpHWkAko1smKw==

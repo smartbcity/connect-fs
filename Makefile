@@ -5,8 +5,6 @@ GATEWAY_PACKAGE	   	:= fs-api:api-gateway
 STORYBOOK_DOCKERFILE	:= infra/docker/storybook/Dockerfile
 STORYBOOK_NAME	   	 	:= smartbcity/fs-storybook
 STORYBOOK_IMG	    	:= ${STORYBOOK_NAME}:${VERSION}
-STORYBOOK_LATEST		:= ${STORYBOOK_NAME}:latest
-
 
 package: package-kotlin
 docs: package-storybook

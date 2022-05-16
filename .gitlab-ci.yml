@@ -1,6 +1,8 @@
 include:
   - project: 'fixers/cicd'
     file: 'make/.gitlab-ci.yml'
+  - project: 'fixers/cicd'
+      file: 'fixers/.gitlab-ci-docs.yml'
 
 stages:
   - package

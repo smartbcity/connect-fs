@@ -22,15 +22,20 @@ allprojects {
 	}
 }
 
-fixers {
-	bundle {
-		id = "fs"
-		name = "Connect FileSystem"
-		description = "File manager"
-		url = "https://gitlab.smartb.city/connect/fs"
+subprojects {
+	plugins.withType(city.smartb.fixers.gradle.config.ConfigPlugin::class.java).whenPluginAdded {
+		fixers {
+			bundle {
+				id = "fs"
+				name = "Connect FileSystem"
+				description = "File manager"
+				url = "https://gitlab.smartb.city/connect/fs"
+			}
+		}
 	}
+}
+fixers {
 	d2 {
 		outputDirectory = file("storybook/d2/")
 	}
 }
-

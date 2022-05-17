@@ -14,13 +14,7 @@ The communication with the S3 storage is done via a [MinIO](https://docs.min.io/
 
 The communication with the SSM is done with an event-sourcing S2 automate and uses Redis as a cache.
 
-```mermaid
-graph TD
-    A[FS] -->|Optionnal| B(S2)
-    A --> C(S3)
-    B --> D(SSM)
-    B --> E(Redis)
-```
+![Architecture diagram](assets/img/diagram.png)
 
 # Getting Started
 

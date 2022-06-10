@@ -6,6 +6,10 @@ spring:
     password: sOmE_sEcUrE_pAsS
   codec:
     max-in-memory-size: 10MB
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 fs:
   s3:

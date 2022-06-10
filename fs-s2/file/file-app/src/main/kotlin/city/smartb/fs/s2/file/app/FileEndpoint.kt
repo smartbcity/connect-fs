@@ -20,7 +20,6 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryInitial
 import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevokedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
-import city.smartb.fs.s2.file.domain.features.command.FileUploadFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
@@ -29,9 +28,19 @@ import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.f2Function
+import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.codec.multipart.FilePart
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
+import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
@@ -41,6 +50,8 @@ import javax.annotation.security.RolesAllowed
  * @d2 service
  * @title File/Entrypoints
  */
+@RestController
+@RequestMapping
 @Configuration
 class FileEndpoint(
     private val fileDeciderSourcingImpl: FileDeciderSourcingImpl,
@@ -102,11 +113,29 @@ class FileEndpoint(
     }
 
     /**
+     * Upload multiple files
+     */
+    @RolesAllowed(Roles.WRITE_FILE)
+    @PostMapping("/fileUploads")
+    fun fileUploads(
+        @RequestPart("command") commands: HashMap<String, FileUploadCommand>,
+        @RequestPart("file") files: Flux<FilePart>
+    ) : Flux<FileUploadedEvent> {
+        return files.map { file ->
+            val cmd = commands[file.filename()]!! // TODO throw readable error if no command found for file
+            fileUpload(cmd, file)
+        }
+    }
+
+    /**
      * Upload a file
      */
     @RolesAllowed(Roles.WRITE_FILE)
-    @Bean
-    fun fileUpload(): FileUploadFunction = f2Function { cmd ->
+    @PostMapping("/fileUpload")
+    fun fileUpload(
+        @RequestPart("command") cmd: FileUploadCommand,
+        @RequestPart("file") file: FilePart
+    ): FileUploadedEvent = runBlocking {
         val pathStr = cmd.path.toString()
         logger.info("fileUpload: $pathStr")
 
@@ -114,7 +143,8 @@ class FileEndpoint(
         val fileExists = fileMetadata != null
         val fileId = fileMetadata?.get("id") ?: UUID.randomUUID().toString()
 
-        val fileByteArray = cmd.content.decodeB64()
+        val fileByteArray = file.contentByteArray()
+
         s3Service.putObject(
             path = pathStr,
             content = fileByteArray,
@@ -242,4 +272,11 @@ class FileEndpoint(
     private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
     private fun FilePath.buildUrl() = buildUrl(s3Config.externalUrl, s3Config.bucket, s3Config.dns)
+
+    private suspend fun FilePart.contentByteArray(): ByteArray {
+        return ByteArrayOutputStream().use { os ->
+            DataBufferUtils.write(content(), os).awaitLast()
+            os.toByteArray()
+        }
+    }
 }

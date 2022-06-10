@@ -1,7 +1,6 @@
 package city.smartb.fs.s2.file.domain.features.command
 
 import city.smartb.fs.s2.file.domain.automate.FileId
-import city.smartb.fs.s2.file.domain.model.Base64String
 import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.SerialName
@@ -29,13 +28,7 @@ data class FileUploadCommand(
 	/**
 	 * Additional metadata of the file
 	 */
-	val metadata: Map<String, String>,
-
-	/**
-	 * Content of the file as Base64
-	 * @example "Q291Y291IGplIHNhcHBlbCBjw6lkcmlr"
-	 */
-	val content: Base64String
+	val metadata: Map<String, String> = emptyMap()
 )
 
 /**

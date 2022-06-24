@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * Upload a file to a given path. If a file already exists at this path, overwrite it.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 10
  */
 typealias FileUploadFunction = F2Function<FileUploadCommand, FileUploadedEvent>

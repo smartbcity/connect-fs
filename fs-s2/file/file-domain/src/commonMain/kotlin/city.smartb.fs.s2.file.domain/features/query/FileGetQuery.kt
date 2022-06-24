@@ -9,8 +9,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * Get a file descriptor and content from a given path.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileQuerySection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 10
  */
 typealias FileGetFunction = F2Function<FileGetQuery, FileGetResult>
@@ -22,7 +22,7 @@ typealias FileGetFunction = F2Function<FileGetQuery, FileGetResult>
 typealias FileGetQuery = FilePath
 
 /**
- * @d2 event
+ * @d2 result
  * @parent [FileGetFunction]
  */
 @Serializable

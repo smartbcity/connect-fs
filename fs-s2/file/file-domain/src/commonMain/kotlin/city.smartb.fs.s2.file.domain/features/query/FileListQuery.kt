@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * Get a list of the file descriptors at the given path.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileQuerySection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 20
  */
 typealias FileListFunction = F2Function<FileListQuery, FileListResult>
@@ -39,7 +39,7 @@ data class FileListQuery(
 )
 
 /**
- * @d2 event
+ * @d2 result
  * @parent [FileListFunction]
  */
 @Serializable

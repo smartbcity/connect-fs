@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 /**
  * Descriptor of a file
  * @d2 model
- * @parent [city.smartb.fs.s2.file.domain.D2FileModelSection]
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 10
  */
 @Serializable

@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * Revoke public access from a given directory.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 40
  */
 typealias FileRevokePublicDirectoryFunction = F2Function<FileRevokePublicDirectoryCommand, FilePublicDirectoryRevokedEvent>

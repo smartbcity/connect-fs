@@ -42,7 +42,7 @@ interface FilePathDTO {
 /**
  * Describe a path to a file within S3
  * @d2 model
- * @parent [city.smartb.fs.s2.file.domain.D2FileModelSection]
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 20
  */
 @Serializable

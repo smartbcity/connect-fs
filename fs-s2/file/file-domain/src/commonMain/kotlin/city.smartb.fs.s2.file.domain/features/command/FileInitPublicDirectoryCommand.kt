@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * Grant public access to a given directory.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 30
  */
 typealias FileInitPublicDirectoryFunction = F2Function<FileInitPublicDirectoryCommand, FilePublicDirectoryInitializedEvent>

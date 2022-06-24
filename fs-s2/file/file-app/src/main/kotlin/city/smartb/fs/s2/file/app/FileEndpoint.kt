@@ -49,6 +49,7 @@ import javax.annotation.security.RolesAllowed
 /**
  * @d2 service
  * @title File/Entrypoints
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  */
 @RestController
 @RequestMapping
@@ -114,6 +115,7 @@ class FileEndpoint(
 
     /**
      * Upload multiple files
+     * @d2 command
      */
     @RolesAllowed(Roles.WRITE_FILE)
     @PostMapping("/fileUploads")

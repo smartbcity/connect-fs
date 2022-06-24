@@ -9,8 +9,8 @@ import s2.dsl.automate.S2Command
 
 /**
  * Delete a given file.
- * @d2 section
- * @parent [city.smartb.fs.s2.file.domain.D2FileCommandSection]
+ * @d2 function
+ * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 20
  */
 typealias FileDeleteFunction = F2Function<FileDeleteCommand, FileDeletedEvent>

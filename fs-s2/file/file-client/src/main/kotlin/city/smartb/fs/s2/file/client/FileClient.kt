@@ -20,7 +20,10 @@ class FileClient(
 
     suspend fun fileList(command: List<FileListQuery>): List<FileListResult> = post("fileList", command)
 
-    suspend fun fileUpload(command: List<FileUploadCommand>): List<FileUploadedEvent> = post("fileUpload", command)
+    suspend fun fileUpload(command: FileUploadCommand, file: ByteArray): FileUploadedEvent = postFormData("fileUpload") {
+        param("command", command)
+        file("file", file, command.path.name)
+    }
 
     suspend fun fileDelete(command: List<FileDeleteCommand>): List<FileDeletedEvent> = post("fileDelete", command)
 
@@ -31,4 +34,5 @@ class FileClient(
     suspend fun revokePublicDirectory(
         command: List<FileRevokePublicDirectoryCommand>
     ): List<FilePublicDirectoryRevokedEvent> = post("revokePublicDirectory", command)
+
 }

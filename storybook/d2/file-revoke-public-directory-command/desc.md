@@ -1,8 +1,8 @@
 
 
-### FileRevokePublicDirectoryCommand
+### Command
 
-
+Type: `FileRevokePublicDirectoryCommand`
 
 
 

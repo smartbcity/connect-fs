@@ -1,8 +1,8 @@
 
 
-### FilePublicDirectoryInitializedEvent
+### Event
 
-
+Type: `FilePublicDirectoryInitializedEvent`
 
 
 

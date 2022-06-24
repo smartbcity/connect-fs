@@ -1,22 +1,22 @@
 
 
-### FileDeletedEvent
+### Event
 
-
+Type: `FileDeletedEvent`
 
 
 
   
 <article>
 
-***id*** [`FileId`](/docs/file-models--page#fileid) 
+***id*** [`FileId`](#fileid) 
 
 Identifier of the deleted file.
 
 </article>
 <article>
 
-***path*** [`FilePath`](/docs/file-models--page#filepath) 
+***path*** [`FilePath`](#filepath) 
 
 Path of the deleted file.
 

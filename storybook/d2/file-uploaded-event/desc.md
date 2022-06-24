@@ -1,8 +1,8 @@
 
 
-### FileUploadedEvent
+### Event
 
-
+Type: `FileUploadedEvent`
 
 
 
@@ -16,7 +16,7 @@ Hash of the uploaded file content.
 </article>
 <article>
 
-***id*** [`FileId`](/docs/file-models--page#fileid) 
+***id*** [`FileId`](#fileid) 
 
 Identifier of the uploaded file.
 
@@ -30,7 +30,7 @@ Additional metadata of the uploaded file.
 </article>
 <article>
 
-***path*** [`FilePath`](/docs/file-models--page#filepath) 
+***path*** [`FilePath`](#filepath) 
 
 Path of the uploaded file.
 

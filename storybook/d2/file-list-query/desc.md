@@ -1,8 +1,8 @@
 
 
-### FileListQuery
+### Query
 
-
+Type: `FileListQuery`
 
 
 

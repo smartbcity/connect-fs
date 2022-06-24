@@ -1,8 +1,8 @@
 
 
-### FileDeleteCommand
+### Command
 
-
+Type: `FileDeleteCommand`
 
 
 

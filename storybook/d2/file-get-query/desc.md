@@ -1,8 +1,8 @@
 
 
-### FileGetQuery
+### Query
 
-
+Type: `FileGetQuery`
 
 
 

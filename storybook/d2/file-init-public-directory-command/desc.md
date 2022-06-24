@@ -1,8 +1,8 @@
 
 
-### FileInitPublicDirectoryCommand
+### Command
 
-
+Type: `FileInitPublicDirectoryCommand`
 
 
 

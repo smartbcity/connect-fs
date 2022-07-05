@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Policy(
     @JsonProperty("Version")
-    val version: String,
+    val version: String = "2012-10-17",
     @JsonProperty("Statement")
-    val statements: MutableList<Statement>
+    val statements: MutableList<Statement> = mutableListOf()
 ) {
     fun getOrAddStatementWith(effect: S3Effect, action: S3Action) = getStatementWith(effect, action)
-        ?: Statement.with(effect, action)
+        ?: Statement.with(effect, action).also(statements::add)
 
     fun getStatementWith(effect: S3Effect, action: S3Action) = statements.firstOrNull { statement ->
         statement.effect == effect.id

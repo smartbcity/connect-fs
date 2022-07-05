@@ -26,6 +26,9 @@ fs:
     signerName: ${ssm.signer.admin.name}
     signerFile: ${ssm.signer.admin.key}
 
+i2:
+  issuers:
+
 ssm:
   signer:
     user:

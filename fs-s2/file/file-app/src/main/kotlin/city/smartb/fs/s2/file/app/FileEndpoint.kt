@@ -3,6 +3,7 @@ package city.smartb.fs.s2.file.app
 import city.smartb.fs.api.config.Roles
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.config.S3Config
+import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
 import city.smartb.fs.s2.file.app.model.S3Effect
 import city.smartb.fs.s2.file.app.model.Statement
@@ -210,7 +211,7 @@ class FileEndpoint(
         ).toString()
         logger.info("initPublicDirectory: $path")
 
-        val policy = s3Service.getBucketPolicy()
+        val policy = s3Service.getBucketPolicy().orEmpty()
         policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
             .addResource(bucket = s3Config.bucket, path = path)
         s3Service.setBucketPolicy(policy)
@@ -234,7 +235,7 @@ class FileEndpoint(
         ).toString()
         logger.info("revokePublicDirectory: $path")
 
-        val policy = s3Service.getBucketPolicy()
+        val policy = s3Service.getBucketPolicy().orEmpty()
         policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
             ?.removeResource(bucket = s3Config.bucket, path = path)
         s3Service.setBucketPolicy(policy)
@@ -281,4 +282,6 @@ class FileEndpoint(
             os.toByteArray()
         }
     }
+
+    private fun Policy?.orEmpty() = this ?: Policy()
 }

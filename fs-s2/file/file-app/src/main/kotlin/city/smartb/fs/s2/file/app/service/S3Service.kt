@@ -95,12 +95,13 @@ class S3Service(
         }
     }
 
-    fun getBucketPolicy(): Policy {
+    fun getBucketPolicy(): Policy? {
         return GetBucketPolicyArgs.builder()
             .bucket(s3Config.bucket)
             .build()
             .let(minioClient::getBucketPolicy)
-            .parseJsonTo(Policy::class.java)
+            .ifBlank { null }
+            ?.parseJsonTo(Policy::class.java)
     }
 
     fun setBucketPolicy(policy: Policy) {

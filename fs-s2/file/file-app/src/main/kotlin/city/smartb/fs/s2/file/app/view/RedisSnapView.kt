@@ -5,6 +5,7 @@ import city.smartb.fs.s2.file.domain.automate.FileId
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
 import s2.sourcing.dsl.snap.SnapRepository
@@ -22,5 +23,9 @@ class RedisSnapView(
         return template.opsForSet().add(entity.id, entity).asFlow().toList().let {
             entity
         }
+    }
+
+    override suspend fun remove(id: FileId): Boolean {
+        return template.opsForSet().delete(id).awaitSingle()
     }
 }

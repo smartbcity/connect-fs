@@ -9,11 +9,11 @@ fun Item.toFile(buildUrl: (FilePath) -> String): File {
     val path = FilePath.from(objectName())
 
     return File(
-        id = metadata[File::id.name]!!,
+        id = metadata[File::id.name].orEmpty(),
         path = path,
         url = buildUrl(path),
         metadata = metadata
     )
 }
 
-fun Item.sanitizedMetadata() = userMetadata().mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
+fun Item.sanitizedMetadata() = userMetadata().orEmpty().mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }

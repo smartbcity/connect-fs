@@ -31,6 +31,8 @@ open class Client(
         return httpClient.post {
             url("$baseUrl/$path")
             header("Content-Type", ContentType.Application.Json)
+            header("Accept", ContentType.Application.Json)
+            header("Accept", ContentType.Application.OctetStream)
             setBody(jsonBody)
         }.body()
     }

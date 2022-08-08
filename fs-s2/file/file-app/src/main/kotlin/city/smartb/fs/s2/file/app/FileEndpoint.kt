@@ -22,6 +22,7 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
 import city.smartb.fs.s2.file.domain.features.query.FileListFunction
@@ -34,8 +35,11 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.MediaType
 import org.springframework.http.codec.multipart.FilePart
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
@@ -93,6 +97,23 @@ class FileEndpoint(
             ),
             content = content
         )
+    }
+
+    @RolesAllowed(Roles.READ_FILE)
+    @PostMapping("/fileDownload", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+    fun fileDownload(
+        @RequestBody query: FileDownloadQuery,
+        response: ServerHttpResponse
+    ): ByteArray? {
+        val path = FilePath(
+            objectType = query.objectType,
+            objectId = query.objectId,
+            directory = query.directory,
+            name = query.name,
+        ).toString()
+
+        response.headers.contentType = MediaType.APPLICATION_OCTET_STREAM
+        return s3Service.getObject(path)?.readAllBytes()
     }
 
     /**

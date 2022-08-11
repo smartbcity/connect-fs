@@ -35,6 +35,7 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.ContentDisposition
 import org.springframework.http.MediaType
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
 import java.io.ByteArrayOutputStream
+import java.net.URLConnection
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
@@ -112,7 +114,13 @@ class FileEndpoint(
             name = query.name,
         ).toString()
 
-        response.headers.contentType = MediaType.APPLICATION_OCTET_STREAM
+        response.headers.contentDisposition = ContentDisposition.attachment().filename(query.name).build()
+        response.headers.contentType = URLConnection.guessContentTypeFromName(query.name)
+            ?.split("/")
+            ?.takeIf { it.size == 2 }
+            ?.let { (type, subtype) -> MediaType(type, subtype) }
+            ?: MediaType.APPLICATION_OCTET_STREAM
+
         return s3Service.getObject(path)?.readAllBytes()
     }
 

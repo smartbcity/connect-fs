@@ -1,5 +1,6 @@
 import city.smartb.gradle.dependencies.FixersDependencies
 import city.smartb.gradle.dependencies.FixersPluginVersions
+import city.smartb.gradle.dependencies.FixersVersions
 import city.smartb.gradle.dependencies.Scope
 import city.smartb.gradle.dependencies.add
 
@@ -14,11 +15,11 @@ object Versions {
 	val f2 = PluginVersions.fixers
 	val s2 = PluginVersions.fixers
 	val ssm = PluginVersions.fixers
-	val i2 = "0.10.1"
+	val i2 = PluginVersions.fixers
 
 	const val springBoot = PluginVersions.springBoot
+	const val ktor = FixersVersions.Kotlin.ktor
 	const val minio = "8.3.7"
-	const val ktor = "2.0.3"
 }
 
 object Repo {

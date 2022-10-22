@@ -1,12 +1,16 @@
 package city.smartb.fs.s2.file.domain.automate
 
+import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
+import city.smartb.fs.s2.file.domain.features.command.FileDeleteCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
 import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileLoggedEvent
 import kotlinx.serialization.Serializable
 import s2.dsl.automate.S2Role
 import s2.dsl.automate.S2State
-import s2.dsl.automate.builder.s2
+import s2.dsl.automate.builder.s2Sourcing
 
 /**
  * Identifier of a file
@@ -18,17 +22,17 @@ import s2.dsl.automate.builder.s2
 typealias FileId = String
 
 object S2 {
-	val traceSourcing = s2 {
+	val traceSourcing = s2Sourcing {
 		name = "FileSourcing"
-		transaction<FileInitiatedEvent> {
+		transaction<FileInitCommand, FileInitiatedEvent> {
 			to = FileState.Exists
 			role = FileRole.Tracer
 		}
-		selfTransaction<FileLoggedEvent> {
+		selfTransaction<FileLogCommand, FileLoggedEvent> {
 			states += FileState.Exists
 			role = FileRole.Tracer
 		}
-		transaction<FileDeletedEvent> {
+		transaction<FileDeleteByIdCommand, FileDeletedEvent> {
 			from = FileState.Exists
 			to = FileState.Deleted
 			role = FileRole.Tracer

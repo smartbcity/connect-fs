@@ -106,10 +106,10 @@ class FileEndpoint(
 
     @RolesAllowed(Roles.READ_FILE)
     @PostMapping("/fileDownload", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
-    suspend fun fileDownload(
+    fun fileDownload(
         @RequestBody query: FileDownloadQuery,
         response: ServerHttpResponse
-    ): ByteArray? {
+    ): ByteArray? = runBlocking {
         val path = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
@@ -124,7 +124,7 @@ class FileEndpoint(
             ?.let { (type, subtype) -> MediaType(type, subtype) }
             ?: MediaType.APPLICATION_OCTET_STREAM
 
-        return s3Service.getObject(path)?.readAllBytes()
+        s3Service.getObject(path)?.readAllBytes()
     }
 
     /**
@@ -132,7 +132,7 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.READ_FILE)
     @Bean
-    suspend fun fileList(): FileListFunction = f2Function { query ->
+    fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
         val prefix = FilePath(
             objectType = query.objectType,

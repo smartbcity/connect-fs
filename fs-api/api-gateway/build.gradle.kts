@@ -2,6 +2,7 @@ plugins {
     id("org.springframework.boot")
     id("city.smartb.fixers.gradle.kotlin.jvm")
     kotlin("plugin.spring")
+    id("org.graalvm.buildtools.native")
 }
 
 dependencies {

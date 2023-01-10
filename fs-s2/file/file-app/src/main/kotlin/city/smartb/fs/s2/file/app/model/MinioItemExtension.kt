@@ -4,7 +4,7 @@ import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
 import io.minio.messages.Item
 
-fun Item.toFile(buildUrl: (FilePath) -> String): File {
+suspend fun Item.toFile(buildUrl: suspend (FilePath) -> String): File {
     val metadata = sanitizedMetadata()
     val path = FilePath.from(objectName())
 

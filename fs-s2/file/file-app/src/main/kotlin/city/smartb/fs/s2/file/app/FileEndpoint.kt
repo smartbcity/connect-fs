@@ -2,7 +2,9 @@ package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.api.config.Roles
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
-import city.smartb.fs.s2.file.app.config.S3Config
+import city.smartb.fs.api.config.FsConfig
+import city.smartb.fs.api.config.S3BucketProvider
+import city.smartb.fs.api.config.S3Properties
 import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
 import city.smartb.fs.s2.file.app.model.S3Effect
@@ -64,7 +66,8 @@ import javax.annotation.security.RolesAllowed
 class FileEndpoint(
     private val fileDeciderSourcingImpl: FileDeciderSourcingImpl,
     private val fsSsmConfig: FsSsmConfig,
-    private val s3Config: S3Config,
+    private val s3Properties: S3Properties,
+    private val s3BucketProvider: S3BucketProvider,
     private val s3Service: S3Service,
 ) {
     private val logger by Logger()
@@ -103,7 +106,7 @@ class FileEndpoint(
 
     @RolesAllowed(Roles.READ_FILE)
     @PostMapping("/fileDownload", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
-    fun fileDownload(
+    suspend fun fileDownload(
         @RequestBody query: FileDownloadQuery,
         response: ServerHttpResponse
     ): ByteArray? {
@@ -129,7 +132,7 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.READ_FILE)
     @Bean
-    fun fileList(): FileListFunction = f2Function { query ->
+    suspend fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
         val prefix = FilePath(
             objectType = query.objectType,
@@ -242,11 +245,11 @@ class FileEndpoint(
 
         val policy = s3Service.getBucketPolicy().orEmpty()
         policy.getOrAddStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
-            .addResource(bucket = s3Config.bucket, path = path)
+            .addResource(bucket = s3BucketProvider.getBucket(), path = path)
         s3Service.setBucketPolicy(policy)
 
         FilePublicDirectoryInitializedEvent(
-            path = Statement.resourcePath(bucket = s3Config.bucket, path = path)
+            path = Statement.resourcePath(bucket = s3BucketProvider.getBucket(), path = path)
         )
     }
 
@@ -266,11 +269,11 @@ class FileEndpoint(
 
         val policy = s3Service.getBucketPolicy().orEmpty()
         policy.getStatementWith(S3Effect.ALLOW, S3Action.GET_OBJECT)
-            ?.removeResource(bucket = s3Config.bucket, path = path)
+            ?.removeResource(bucket = s3BucketProvider.getBucket(), path = path)
         s3Service.setBucketPolicy(policy)
 
         FilePublicDirectoryRevokedEvent(
-            path = Statement.resourcePath(bucket = s3Config.bucket, path = path)
+            path = Statement.resourcePath(bucket = s3BucketProvider.getBucket(), path = path)
         )
     }
 
@@ -303,7 +306,7 @@ class FileEndpoint(
     private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
     private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
-    private fun FilePath.buildUrl() = buildUrl(s3Config.externalUrl, s3Config.bucket, s3Config.dns)
+    private suspend fun FilePath.buildUrl() = buildUrl(s3Properties.externalUrl, s3BucketProvider.getBucket(), s3Properties.dns)
 
     private suspend fun FilePart.contentByteArray(): ByteArray {
         return ByteArrayOutputStream().use { os ->

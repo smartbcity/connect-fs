@@ -9,7 +9,6 @@ dependencies {
 
 	implementation(project(":fs-api:api-config"))
 
-	implementation("io.minio:minio:${Versions.minio}")
 	implementation("city.smartb.s2:s2-spring-boot-starter-sourcing-ssm:${Versions.s2}")
 	implementation("city.smartb.s2:s2-spring-boot-starter-utils-logger:${Versions.s2}")
 	implementation("org.springframework.boot:spring-boot-starter-webflux:${Versions.springBoot}")

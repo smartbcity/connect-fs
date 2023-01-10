@@ -12,6 +12,10 @@ spring:
       max-request-size: 10MB
 
 fs:
+  space:
+#   name: fs-sample
+    jwt:
+      claims: space
   s3:
     internal-url: http://localhost:9000
     external-url: http://localhost:9000
@@ -46,6 +50,8 @@ spring:
 fs:
   s3:
     username: minio
+    bucket:
+      name: fs-sample
   ssm:
     directories:
       - important

@@ -1,7 +1,10 @@
 package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.s2.file.app.config.FileSourcingS2Decider
-import city.smartb.fs.s2.file.app.config.S3Config
+import city.smartb.fs.api.config.FsConfig
+import city.smartb.fs.api.config.FsProperties
+import city.smartb.fs.api.config.S3BucketProvider
+import city.smartb.fs.api.config.S3Properties
 import city.smartb.fs.s2.file.domain.FileDecider
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
@@ -15,7 +18,8 @@ import org.springframework.stereotype.Service
 @Service
 class FileDeciderSourcingImpl(
 	private val decider: FileSourcingS2Decider,
-	private val s3Config: S3Config
+	private val s3Properties: S3Properties,
+	private val s3BucketProvider: S3BucketProvider
 ): FileDecider {
 
 	override suspend fun init(cmd: FileInitCommand): FileInitiatedEvent = decider.init(cmd) {
@@ -53,5 +57,5 @@ class FileDeciderSourcingImpl(
 		)
 	}
 
-	private fun FilePath.buildUrl() = buildUrl(s3Config.externalUrl, s3Config.bucket, s3Config.dns)
+	private suspend fun FilePath.buildUrl() = buildUrl(s3Properties.externalUrl, s3BucketProvider.getBucket(), s3Properties.dns)
 }

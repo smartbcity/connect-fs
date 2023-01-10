@@ -28,7 +28,6 @@ fs:
 
 i2:
   issuers:
-
 ssm:
   signer:
     user:

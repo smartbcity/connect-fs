@@ -7,10 +7,15 @@ STORYBOOK_NAME	   	 	:= smartbcity/fs-storybook
 STORYBOOK_IMG	    	:= ${STORYBOOK_NAME}:${VERSION}
 
 libs: package-kotlin
+docker: package-docker
 docs: package-storybook
 
 package-kotlin:
-	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build ${GATEWAY_PACKAGE}:bootBuildImage publish -x test
+	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build publish -x test
+	@docker push ${GATEWAY_IMG}
+
+package-docker:
+	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build ${GATEWAY_PACKAGE}:bootBuildImage -x test
 	@docker push ${GATEWAY_IMG}
 
 package-storybook:

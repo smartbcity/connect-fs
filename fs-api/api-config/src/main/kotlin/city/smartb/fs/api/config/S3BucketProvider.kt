@@ -1,14 +1,15 @@
 package city.smartb.fs.api.config
 
-import city.smartb.fs.api.error.NoBucketConfiguredException
+import city.smartb.fs.api.error.NoBucketConfiguredError
 import city.smartb.i2.spring.boot.auth.AuthenticationProvider
+import f2.dsl.cqrs.error.asException
 
 class S3BucketProvider(
     private val fsProperties: FsProperties
 ) {
 
     suspend fun getBucket(): String {
-        return getSpace() ?: deprecatedBucket() ?: throw NoBucketConfiguredException()
+        return getSpace() ?: deprecatedBucket() ?: throw NoBucketConfiguredError().asException()
     }
 
     private suspend fun getSpace(): String? {
@@ -17,7 +18,7 @@ class S3BucketProvider(
         }
     }
 
-    private suspend fun deprecatedBucket(): String? {
+    private fun deprecatedBucket(): String? {
         return fsProperties.s3.bucket
     }
 

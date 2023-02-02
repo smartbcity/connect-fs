@@ -109,7 +109,7 @@ class FileEndpoint(
     suspend fun fileDownload(
         @RequestBody query: FileDownloadQuery,
         response: ServerHttpResponse
-    ): ByteArray? {
+    ): ByteArray? = runBlocking {
         val path = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
@@ -124,7 +124,7 @@ class FileEndpoint(
             ?.let { (type, subtype) -> MediaType(type, subtype) }
             ?: MediaType.APPLICATION_OCTET_STREAM
 
-        return s3Service.getObject(path)?.readAllBytes()
+        s3Service.getObject(path)?.readAllBytes()
     }
 
     /**

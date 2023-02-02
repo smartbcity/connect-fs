@@ -4,4 +4,6 @@ include:
   - project: 'framework/fixers/cicd'
     file: 'fixers/.gitlab-ci-libs.yml'
   - project: 'framework/fixers/cicd'
+    file: 'fixers/.gitlab-ci-docker.yml'
+  - project: 'framework/fixers/cicd'
     file: 'fixers/.gitlab-ci-docs.yml'

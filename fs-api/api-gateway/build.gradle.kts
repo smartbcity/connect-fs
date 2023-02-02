@@ -2,7 +2,7 @@ plugins {
     id("org.springframework.boot")
     id("city.smartb.fixers.gradle.kotlin.jvm")
     kotlin("plugin.spring")
-    id("org.graalvm.buildtools.native")
+//    id("org.graalvm.buildtools.native")
 }
 
 dependencies {
@@ -11,6 +11,8 @@ dependencies {
     implementation("city.smartb.ssm:ssm-tx-config-spring-boot-starter:${Versions.s2}")
     implementation(project(":fs-api:api-config"))
     implementation(project(":fs-s2:file:file-app"))
+    implementation("org.reflections:reflections:0.10.2")
+
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootBuildImage> {

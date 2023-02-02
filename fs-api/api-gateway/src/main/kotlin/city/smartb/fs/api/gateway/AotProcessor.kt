@@ -10,6 +10,14 @@ import city.smartb.fs.s2.file.domain.features.command.FileInitPublicDirectoryCom
 import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
+import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
+import city.smartb.fs.s2.file.domain.features.query.FileDownloadResult
+import city.smartb.fs.s2.file.domain.features.query.FileGetQuery
+import city.smartb.fs.s2.file.domain.features.query.FileGetResult
+import city.smartb.fs.s2.file.domain.features.query.FileListQuery
+import city.smartb.fs.s2.file.domain.features.query.FileListResult
+import io.minio.BaseArgs
+import io.minio.ListObjectsArgs
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
 import io.minio.StatObjectArgs
@@ -18,8 +26,10 @@ import io.minio.messages.ErrorResponse
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.Reader
+import java.io.Serializable
 import java.lang.reflect.Method
 import java.util.stream.Collectors
+import org.reflections.Reflections
 import org.springframework.aot.generate.GenerationContext
 import org.springframework.aot.hint.ExecutableMode
 import org.springframework.aot.hint.RuntimeHints
@@ -55,10 +65,17 @@ class AotProcessor : BeanFactoryInitializationAotProcessor {
             hints.register(FileRevokePublicDirectoryCommand::class.java)
             hints.register(FileUploadCommand::class.java)
 
+            hints.register(FileListQuery::class.java)
+            hints.register(FileListResult::class.java)
+            hints.register(FileGetQuery::class.java)
+            hints.register(FileGetResult::class.java)
+            hints.register(FileDownloadQuery::class.java)
+            hints.register(FileDownloadResult::class.java)
+
             hints.register(StatObjectArgs::class.java)
             hints.register(PutObjectArgs::class.java)
             hints.register(RemoveObjectArgs::class.java)
-
+            hints.register(ListObjectsArgs::class.java)
 
             registerXml(hints)
         }
@@ -67,9 +84,26 @@ class AotProcessor : BeanFactoryInitializationAotProcessor {
     private fun registerXml(hints: RuntimeHints) {
         hints.register(Xml::class.java)
 
-        findAllClassesUsingClassLoader(ErrorResponse::class.java.packageName).filterNotNull().forEach {
+        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        Reflections(ErrorResponse::class.java.packageName)
+            .getSubTypesOf(Serializable::class.java).forEach {
+            println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+            println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+            println(it)
+            println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+            println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
             hints.register(it)
         }
+        Reflections(BaseArgs::class.java.packageName)
+            .getSubTypesOf(BaseArgs::class.java).forEach {
+            println("////////////////////////////////////////////////////////")
+            println("////////////////////////////////////////////////////////")
+            println(it)
+            println("////////////////////////////////////////////////////////")
+            println("////////////////////////////////////////////////////////")
+            hints.register(it)
+        }
+
         val methodMarshal: Method = ReflectionUtils.findMethod(
             Xml::class.java,
             "marshal",
@@ -104,34 +138,8 @@ class AotProcessor : BeanFactoryInitializationAotProcessor {
 
     private fun <T> RuntimeHints.register(clazz: Class<T>) {
         reflection().registerType(clazz)
-        clazz.getDeclaredConstructors().forEach {
+        clazz.declaredConstructors.forEach {
             reflection().registerConstructor(it, ExecutableMode.INVOKE)
-        }
-    }
-
-    fun findAllClassesUsingClassLoader(packageName: String): Set<Class<*>?> {
-        val stream = ClassLoader.getSystemClassLoader()
-            .getResourceAsStream(packageName.replace("[.]".toRegex(), "/"))
-        val reader = BufferedReader(InputStreamReader(stream))
-        return reader.lines()
-            .filter { line: String -> line.endsWith(".class") }
-            .map { line: String ->
-                getClass(
-                    line,
-                    packageName
-                )
-            }
-            .collect(Collectors.toSet())
-    }
-
-    private fun getClass(className: String, packageName: String): Class<*>? {
-        return try {
-             Class.forName(
-                packageName + "."
-                        + className.substring(0, className.lastIndexOf('.'))
-            )
-        } catch (e: ClassNotFoundException) {
-            null
         }
     }
 }

@@ -1,8 +1,8 @@
 pluginManagement {
 	repositories {
-		mavenCentral()
 		gradlePluginPortal()
-		maven { url = uri("https://oss.sonatype.org/service/local/repositories/releases/content") }
+		mavenCentral()
+		maven { url = uri("https://oss.sonatype.org/content/repositories/releases") }
 		maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 	}
 }

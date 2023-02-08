@@ -132,7 +132,7 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.READ_FILE)
     @Bean
-    suspend fun fileList(): FileListFunction = f2Function { query ->
+    fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
         val prefix = FilePath(
             objectType = query.objectType,

@@ -6,17 +6,22 @@ import city.smartb.gradle.dependencies.add
 
 object PluginVersions {
 	val fixers = FixersPluginVersions.fixers
-	val d2 = FixersPluginVersions.fixers
+//	val d2 = FixersPluginVersions.fixers
+	val d2 = "0.12.0"
 	const val kotlin = FixersPluginVersions.kotlin
 	const val springBoot = FixersPluginVersions.springBoot
 	const val graalvm = FixersPluginVersions.graalvm
 }
 
 object Versions {
-	val f2 = PluginVersions.fixers
-	val s2 = PluginVersions.fixers
-	val ssm = PluginVersions.fixers
-	val i2 = PluginVersions.fixers
+//	val f2 = PluginVersions.fixers
+//	val s2 = PluginVersions.fixers
+//	val ssm = PluginVersions.fixers
+//	val i2 = PluginVersions.fixers
+	val f2 = "0.12.0"
+	val s2 = "0.12.0"
+	val ssm = "0.12.0"
+	val i2 = "0.12.0"
 
 	const val springBoot = PluginVersions.springBoot
 	const val ktor = FixersVersions.Kotlin.ktor
@@ -26,8 +31,8 @@ object Versions {
 object Repo {
 	val snapshot: List<String> = listOf(
 		// For fixers
-		"https://oss.sonatype.org/service/local/repositories/releases/content",
 		"https://oss.sonatype.org/content/repositories/snapshots",
+		"https://oss.sonatype.org/service/local/repositories/releases/content"
 		//For pdfbox
 		"https://jitpack.io"
 	)

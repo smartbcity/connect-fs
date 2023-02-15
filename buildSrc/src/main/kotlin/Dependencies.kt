@@ -32,7 +32,7 @@ object Repo {
 	val snapshot: List<String> = listOf(
 		// For fixers
 		"https://oss.sonatype.org/content/repositories/snapshots",
-		"https://oss.sonatype.org/service/local/repositories/releases/content"
+		"https://oss.sonatype.org/service/local/repositories/releases/content",
 		//For pdfbox
 		"https://jitpack.io"
 	)

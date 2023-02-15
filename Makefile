@@ -12,7 +12,6 @@ docs: package-storybook
 
 package-kotlin:
 	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build publish -x test
-	@docker push ${GATEWAY_IMG}
 
 package-docker:
 	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build ${GATEWAY_PACKAGE}:bootBuildImage -x test

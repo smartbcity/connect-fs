@@ -1,6 +1,6 @@
 package city.smartb.fs.api.config
 
-import city.smartb.fs.api.error.NoBucketConfiguredError
+import city.smartb.fs.commons.error.NoBucketConfiguredError
 import city.smartb.i2.spring.boot.auth.AuthenticationProvider
 import f2.dsl.cqrs.error.asException
 

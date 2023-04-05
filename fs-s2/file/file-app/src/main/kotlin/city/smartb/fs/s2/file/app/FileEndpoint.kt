@@ -31,6 +31,9 @@ import city.smartb.fs.s2.file.domain.features.query.FileListFunction
 import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
+import city.smartb.fs.spring.utils.contentByteArray
+import city.smartb.fs.spring.utils.encodeToB64
+import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.runBlocking
@@ -298,22 +301,9 @@ class FileEndpoint(
         ).let { fileDeciderSourcingImpl.log(it).toFileUploadedEvent() }
     }
 
-    private fun ByteArray.hash() = MessageDigest
-        .getInstance("SHA-256")
-        .digest(this)
-        .encodeToB64()
-
-    private fun ByteArray.encodeToB64() = Base64.getEncoder().encodeToString(this)
-    private fun String.decodeB64() = Base64.getDecoder().decode(substringAfterLast(";base64,"))
 
     private suspend fun FilePath.buildUrl() = buildUrl(s3Properties.externalUrl, s3BucketProvider.getBucket(), s3Properties.dns)
 
-    private suspend fun FilePart.contentByteArray(): ByteArray {
-        return ByteArrayOutputStream().use { os ->
-            DataBufferUtils.write(content(), os).awaitLast()
-            os.toByteArray()
-        }
-    }
 
     private fun Policy?.orEmpty() = this ?: Policy()
 }

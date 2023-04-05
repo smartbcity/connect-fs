@@ -1,4 +1,4 @@
-package city.smartb.fs.api.error
+package city.smartb.fs.commons.error
 
 import f2.dsl.cqrs.error.F2Error
 import f2.dsl.cqrs.exception.F2Exception

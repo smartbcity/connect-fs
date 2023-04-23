@@ -4,24 +4,25 @@ import city.smartb.gradle.dependencies.FixersVersions
 import city.smartb.gradle.dependencies.Scope
 import city.smartb.gradle.dependencies.add
 
-object PluginVersions {
+
+object Framework {
 	val fixers = FixersPluginVersions.fixers
-//	val d2 = FixersPluginVersions.fixers
-	val d2 = "0.12.0"
+	val connect =  "experimental-SNAPSHOT"
+}
+
+object PluginVersions {
+	val fixers = Framework.fixers
+	val d2 = Framework.fixers
 	const val kotlin = FixersPluginVersions.kotlin
 	const val springBoot = FixersPluginVersions.springBoot
 	const val graalvm = FixersPluginVersions.graalvm
 }
 
 object Versions {
-//	val f2 = PluginVersions.fixers
-//	val s2 = PluginVersions.fixers
-//	val ssm = PluginVersions.fixers
-//	val i2 = PluginVersions.fixers
-	val f2 = "0.12.0"
-	val s2 = "0.12.0"
-	val ssm = "0.12.0"
-	val i2 = "0.12.0"
+	val f2 = Framework.fixers
+	val s2 = Framework.fixers
+	val ssm = Framework.fixers
+	val i2 = Framework.fixers
 
 	const val springBoot = PluginVersions.springBoot
 	const val ktor = FixersVersions.Kotlin.ktor
@@ -33,8 +34,6 @@ object Repo {
 		// For fixers
 		"https://oss.sonatype.org/content/repositories/snapshots",
 		"https://oss.sonatype.org/service/local/repositories/releases/content",
-		//For pdfbox
-		"https://jitpack.io"
 	)
 }
 

@@ -55,6 +55,8 @@ fs:
   ssm:
     directories:
       - important
+  init:
+    buckets: fs-sample, fs-sample-test
 
 #ssm:
 #  couchdb:

@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "fs")
 data class FsProperties (
     val s3: S3Properties,
+    val init: BucketInitProperties?,
     val space: SpaceProperties?,
 )
 
@@ -38,4 +39,11 @@ const val SPACE_CLAIM_NAME = "space"
  */
 data class JwtProperties(
     val claim: String? = SPACE_CLAIM_NAME,
+)
+
+/**
+ * Specify the name of bucket separated by a coma.
+ */
+data class BucketInitProperties(
+    val buckets: String,
 )

@@ -120,7 +120,6 @@ class FileEndpoint(
             name = query.name,
         ).toString()
 
-        response.headers.contentDisposition = ContentDisposition.attachment().filename(query.name).build()
         response.headers.contentType = URLConnection.guessContentTypeFromName(query.name)
             ?.split("/")
             ?.takeIf { it.size == 2 }

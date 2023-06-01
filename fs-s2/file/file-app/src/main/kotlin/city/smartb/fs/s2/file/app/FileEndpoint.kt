@@ -1,10 +1,9 @@
 package city.smartb.fs.s2.file.app
 
 import city.smartb.fs.api.config.Roles
-import city.smartb.fs.s2.file.app.config.FsSsmConfig
-import city.smartb.fs.api.config.FsConfig
 import city.smartb.fs.api.config.S3BucketProvider
 import city.smartb.fs.api.config.S3Properties
+import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
 import city.smartb.fs.s2.file.app.model.S3Effect
@@ -35,12 +34,11 @@ import city.smartb.fs.spring.utils.contentByteArray
 import city.smartb.fs.spring.utils.encodeToB64
 import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
-import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.http.ContentDisposition
 import org.springframework.http.MediaType
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -51,10 +49,7 @@ import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
-import java.io.ByteArrayOutputStream
 import java.net.URLConnection
-import java.security.MessageDigest
-import java.util.Base64
 import java.util.UUID
 import javax.annotation.security.RolesAllowed
 
@@ -112,13 +107,14 @@ class FileEndpoint(
     suspend fun fileDownload(
         @RequestBody query: FileDownloadQuery,
         response: ServerHttpResponse
-    ): ByteArray? = runBlocking {
+    ): ByteArray? {
         val path = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
             directory = query.directory,
             name = query.name,
         ).toString()
+        logger.info("fileDownload: $path")
 
         response.headers.contentType = URLConnection.guessContentTypeFromName(query.name)
             ?.split("/")
@@ -126,7 +122,9 @@ class FileEndpoint(
             ?.let { (type, subtype) -> MediaType(type, subtype) }
             ?: MediaType.APPLICATION_OCTET_STREAM
 
-        s3Service.getObject(path)?.readAllBytes()
+        return withContext(Dispatchers.IO) {
+            s3Service.getObject(path)?.readAllBytes()
+        }
     }
 
     /**

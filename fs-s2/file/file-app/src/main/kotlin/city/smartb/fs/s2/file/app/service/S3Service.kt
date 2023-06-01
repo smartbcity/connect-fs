@@ -88,6 +88,7 @@ class S3Service(
                 .let(minioClient::getObject)
         } catch (e: ErrorResponseException) {
             if (e.errorResponse().code() == "NoSuchKey") {
+                println("NoSuchKey")
                 null
             } else {
                 throw e

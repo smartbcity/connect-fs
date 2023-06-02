@@ -2,7 +2,7 @@
   "name": "components",
   "version": "1.0.0",
   "license": "MIT",
-  "description": "Plateform documentation",
+  "description": "FS documentation",
   "main": "src/index.ts",
   "source": "src/index.ts",
   "types": "src/index.ts",

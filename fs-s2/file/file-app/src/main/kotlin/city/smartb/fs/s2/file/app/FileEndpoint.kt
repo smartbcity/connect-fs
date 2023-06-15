@@ -195,7 +195,7 @@ class FileEndpoint(
         )
 
         if (cmd.vectorize) {
-            vectorpediaClient.fileVectorize(fileByteArray, cmd.metadata)
+            vectorpediaClient.fileVectorize(cmd.path, fileByteArray, cmd.metadata)
         }
 
         if (mustBeSavedToSsm(cmd.path.directory)) {
@@ -252,7 +252,7 @@ class FileEndpoint(
         val fileContent = withContext(Dispatchers.IO) {
             s3Service.getObject(cmd.path.toString())?.readAllBytes()
         } ?: throw NotFoundException("File", cmd.path.toString())
-        vectorpediaClient.fileVectorize(fileContent, cmd.metadata)
+        vectorpediaClient.fileVectorize(cmd.path, fileContent, cmd.metadata)
 
         FileVectorizedEvent(cmd.path)
     }

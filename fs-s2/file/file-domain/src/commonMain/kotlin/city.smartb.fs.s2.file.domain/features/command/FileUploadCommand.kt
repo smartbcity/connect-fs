@@ -28,7 +28,14 @@ data class FileUploadCommand(
 	/**
 	 * Additional metadata of the file
 	 */
-	val metadata: Map<String, String> = emptyMap()
+	val metadata: Map<String, String> = emptyMap(),
+
+	/**
+	 * If true, will vectorize and upload the content and given metadata of the file to a vector store.<br/>
+	 * /!\ The vector store API url needs to be configured for this to work.
+	 * @example false
+	 */
+	val vectorize: Boolean = false
 )
 
 /**

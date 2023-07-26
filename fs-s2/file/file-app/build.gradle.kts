@@ -14,4 +14,5 @@ dependencies {
 	Dependencies.Spring.bootWebflux(::implementation)
 	Dependencies.Spring.redis(::implementation)
 	Dependencies.Spring.test(::testImplementation)
+	Dependencies.ktor(::api)
 }

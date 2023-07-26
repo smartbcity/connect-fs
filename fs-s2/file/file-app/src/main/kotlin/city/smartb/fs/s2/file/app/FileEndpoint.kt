@@ -11,6 +11,7 @@ import city.smartb.fs.s2.file.app.model.Statement
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
+import city.smartb.fs.s2.file.app.service.VectorpediaClient
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -23,6 +24,8 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileVectorizeFunction
+import city.smartb.fs.s2.file.domain.features.command.FileVectorizedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
@@ -34,9 +37,11 @@ import city.smartb.fs.spring.utils.contentByteArray
 import city.smartb.fs.spring.utils.encodeToB64
 import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
+import f2.spring.exception.NotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -69,6 +74,9 @@ class FileEndpoint(
     private val s3Service: S3Service,
 ) {
     private val logger by Logger()
+
+    @Autowired(required = false)
+    private lateinit var vectorpediaClient: VectorpediaClient
 
     /**
      * Fetch a given file descriptor and content
@@ -186,6 +194,10 @@ class FileEndpoint(
             metadata = cmd.metadata.plus("id" to fileId)
         )
 
+        if (cmd.vectorize) {
+            vectorpediaClient.fileVectorize(cmd.path, fileByteArray, cmd.metadata)
+        }
+
         if (mustBeSavedToSsm(cmd.path.directory)) {
             if (fileExists) {
                 fileByteArray.logFileInSsm(cmd, fileId, cmd.path.buildUrl())
@@ -227,6 +239,22 @@ class FileEndpoint(
             id = id,
             path = cmd
         )
+    }
+
+    /**
+     * Vectorize a file and save it into a vector-store
+     */
+    @RolesAllowed(Roles.WRITE_FILE)
+    @Bean
+    fun fileVectorize(): FileVectorizeFunction = f2Function { cmd ->
+        logger.info("fileVectorize: ${cmd.path}")
+
+        val fileContent = withContext(Dispatchers.IO) {
+            s3Service.getObject(cmd.path.toString())?.readAllBytes()
+        } ?: throw NotFoundException("File", cmd.path.toString())
+        vectorpediaClient.fileVectorize(cmd.path, fileContent, cmd.metadata)
+
+        FileVectorizedEvent(cmd.path)
     }
 
     /**

@@ -3,6 +3,9 @@ package city.smartb.fs.s2.file.app
 import city.smartb.fs.api.config.Roles
 import city.smartb.fs.api.config.S3BucketProvider
 import city.smartb.fs.api.config.S3Properties
+import city.smartb.fs.commons.kb.KbClient
+import city.smartb.fs.commons.kb.domain.command.VectorCreateCommandDTOBase
+import city.smartb.fs.commons.kb.vectorCreateFunction
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
@@ -11,7 +14,6 @@ import city.smartb.fs.s2.file.app.model.Statement
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
-import city.smartb.fs.s2.file.app.service.KbClient
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -37,6 +39,7 @@ import city.smartb.fs.spring.utils.contentByteArray
 import city.smartb.fs.spring.utils.encodeToB64
 import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
+import f2.dsl.fnc.invokeWith
 import f2.spring.exception.NotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -195,7 +198,7 @@ class FileEndpoint(
         )
 
         if (cmd.vectorize) {
-            kbClient.fileVectorize(cmd.path, fileByteArray, cmd.metadata)
+            vectorize(cmd.path, cmd.metadata, fileByteArray)
         }
 
         if (mustBeSavedToSsm(cmd.path.directory)) {
@@ -214,6 +217,20 @@ class FileEndpoint(
                 time = System.currentTimeMillis()
             )
         }
+    }
+
+    private suspend fun vectorize(
+        path: FilePath,
+        metadata: Map<String, String>,
+        fileByteArray: ByteArray
+    ) {
+        logger.debug("Vectorizing file $path")
+        VectorCreateCommandDTOBase(
+            path = path,
+            file = fileByteArray,
+            metadata = metadata
+        ).invokeWith(kbClient.vectorCreateFunction())
+        logger.debug("File $path vectorized")
     }
 
     /**
@@ -252,7 +269,8 @@ class FileEndpoint(
         val fileContent = withContext(Dispatchers.IO) {
             s3Service.getObject(cmd.path.toString())?.readAllBytes()
         } ?: throw NotFoundException("File", cmd.path.toString())
-        kbClient.fileVectorize(cmd.path, fileContent, cmd.metadata)
+
+        vectorize(cmd.path, cmd.metadata, fileContent)
 
         FileVectorizedEvent(cmd.path)
     }

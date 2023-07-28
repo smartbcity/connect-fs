@@ -58,6 +58,9 @@ object Dependencies {
 			"io.lettuce:lettuce-core:6.1.6.RELEASE"
 		)
 
+		fun autoConfigure(scope: Scope, ksp: Scope)
+				= FixersDependencies.Jvm.Spring.autoConfigure(scope, ksp)
+
 		fun test(scope: Scope) = scope.add(
 			"org.springframework.boot:spring-boot-starter-test:${Versions.springBoot}",
 		).also {
@@ -65,7 +68,27 @@ object Dependencies {
 		}
 	}
 
+	object Mpp {
+		fun f2(scope: Scope) = scope.add(
+			"city.smartb.f2:f2-dsl-function:${Versions.f2}",
+			"city.smartb.f2:f2-dsl-cqrs:${Versions.f2}"
+		)
 
+		fun f2Client(scope: Scope) = scope.add(
+			"city.smartb.f2:f2-client-ktor:${Versions.f2}",
+		)
+
+		object Ktor {
+			object Client {
+				fun logging(scope: Scope) = scope.add(
+					"io.ktor:ktor-client-logging:${Versions.ktor}",
+				)
+				fun auth(scope: Scope) = scope.add(
+					"io.ktor:ktor-client-auth:${Versions.ktor}",
+				)
+			}
+		}
+	}
 	fun junit(scope: Scope) = FixersDependencies.Jvm.Test.junit(scope)
 	fun cucumber(scope: Scope) = FixersDependencies.Jvm.Test.cucumber(scope)
 

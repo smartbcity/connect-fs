@@ -9,7 +9,6 @@ pluginManagement {
 
 rootProject.name = "fs"
 
-
 include(
 	"fs-api:api-config",
 	"fs-api:api-gateway",
@@ -17,6 +16,11 @@ include(
 
 include(
 	"fs-commons:error",
+)
+
+include(
+	"fs-infra:kb:kb-client",
+	"fs-infra:kb:kb-domain",
 )
 
 include(

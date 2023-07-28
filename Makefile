@@ -16,7 +16,6 @@ docker-push: docker-fs-api-push
 docs-build: package-storybook-build
 docs-push: package-storybook-push
 
-
 package-kotlin:
 	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build publishToMavenLocal publish -x test
 

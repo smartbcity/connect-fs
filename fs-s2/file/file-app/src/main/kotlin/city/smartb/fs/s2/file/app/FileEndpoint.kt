@@ -5,7 +5,6 @@ import city.smartb.fs.api.config.S3BucketProvider
 import city.smartb.fs.api.config.S3Properties
 import city.smartb.fs.commons.kb.KbClient
 import city.smartb.fs.commons.kb.domain.command.VectorCreateCommandDTOBase
-import city.smartb.fs.commons.kb.vectorCreateFunction
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action

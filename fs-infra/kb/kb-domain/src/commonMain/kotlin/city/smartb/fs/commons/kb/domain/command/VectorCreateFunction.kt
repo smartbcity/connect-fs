@@ -8,9 +8,9 @@ import kotlin.js.JsExport
 import kotlin.js.JsName
 
 /**
- * Create an activity.
+ * Create a knowledge vector.
  * @d2 function
- * @parent [city.smartb.registry.program.f2.activity.domain.D2ActivityF2Page]
+ * @parent [city.smartb.fs.commons.kb.domain.D2VectorF2Page]
  * @order 10
  */
 typealias VectorCreateFunction = F2Function<VectorCreateCommandDTOBase, Unit>

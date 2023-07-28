@@ -1,7 +1,11 @@
 package city.smartb.fs.commons.kb
 
+import city.smartb.fs.commons.kb.domain.command.VectorAskFunction
 import city.smartb.fs.commons.kb.domain.command.VectorCreateFunction
+import city.smartb.registry.program.f2.chat.domain.model.ChatMessage
+import city.smartb.registry.program.f2.chat.domain.model.ChatMetadata
 import f2.client.F2Client
+import f2.client.function
 import f2.client.ktor.F2ClientBuilder
 import f2.client.ktor.get
 import f2.client.ktor.http.F2DefaultJson
@@ -50,40 +54,24 @@ fun kbClient(urlBase: String, /*accessToken: String*/): F2SupplierSingle<KbClien
     )
 }
 
-open class KbClient(val client: F2Client)
+open class KbClient(val client: F2Client) {
+    fun knowledgeAsk(): VectorAskFunction = client.function(this::knowledgeAsk.name)
 
-//class KbClient(
-//    baseUrl: String,
-//    block: HttpClientConfig<*>.() -> Unit = {}
-//): Client(baseUrl, block) {
-//
-//    private val logger = LoggerFactory.getLogger(KbClient::class.java)
-//
-//    suspend fun fileVectorize(path: FilePath, file: ByteArray, metadata: Map<String, String>) {
-//        logger.debug("Vectorizing file $path")
-//        postFormData<Unit>("") {
-//            file("file", file, path.name)
-//            param("metadata", metadata + ("fsPath" to path.toString()))
-//        }
-//        logger.debug("File $path vectorized")
-//    }
-//}
-//
-
-
-
-fun KbClient.vectorCreateFunction(): VectorCreateFunction = F2Function  { msgs ->
-    msgs.map { cmd ->
-        val httpF2Client = (client as HttpF2Client)
-        httpF2Client.httpClient.submitFormWithBinaryData(
-            url = "${httpF2Client.urlBase}",
-            formData = FormDataBodyBuilder().apply {
-                param("metadata", cmd.metadata + ("fsPath" to cmd.path.toString()))
-                file("file", cmd.file, cmd.path.name)
-            }.toFormData()
-        ).body()
+    fun vectorCreateFunction(): VectorCreateFunction = F2Function  { msgs ->
+        msgs.map { cmd ->
+            val httpF2Client = (client as HttpF2Client)
+            httpF2Client.httpClient.submitFormWithBinaryData(
+                url = "${httpF2Client.urlBase}",
+                formData = FormDataBodyBuilder().apply {
+                    param("metadata", cmd.metadata + ("fsPath" to cmd.path.toString()))
+                    file("file", cmd.file, cmd.path.name)
+                }.toFormData()
+            ).body()
+        }
     }
+
 }
+
 
 //TODO PUT THAT in F2 https://smartbcity.atlassian.net/jira/software/projects/FX/boards/28?selectedIssue=FX-154
 class FormDataBodyBuilder {
@@ -115,7 +103,4 @@ class FormDataBodyBuilder {
             headers = Headers.build { append(HttpHeaders.ContentDisposition, "filename=$filename") }
         ).let(formParts::add)
     }
-
-//    private fun <T> T.toJson(): String = jacksonObjectMapper()
-//        .writeValueAsString(this)
 }

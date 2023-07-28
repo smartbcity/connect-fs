@@ -8,25 +8,31 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import s2.spring.utils.logger.Logger
 
-class VectorpediaClient(
+class KbClient(
     baseUrl: String,
     block: HttpClientConfig<*>.() -> Unit = {}
 ): Client(baseUrl, block) {
-    suspend fun fileVectorize(path: FilePath, file: ByteArray, metadata: Map<String, String>): Unit = postFormData("") {
-        file("file", file, path.name)
-        param("metadata", metadata + ("fsPath" to path.toString()))
+    private val logger by Logger()
+    suspend fun fileVectorize(path: FilePath, file: ByteArray, metadata: Map<String, String>) {
+        logger.debug("Vectorizing file $path")
+        postFormData<Unit>("") {
+            file("file", file, path.name)
+            param("metadata", metadata + ("fsPath" to path.toString()))
+        }
+        logger.debug("File $path vectorized")
     }
 }
 
 @Configuration
-@ConditionalOnProperty("fs.vectorpedia.url")
-class VectorpediaConfiguration {
-    @Value("\${fs.vectorpedia.url}")
+@ConditionalOnProperty("fs.kb.url")
+class KbConfiguration {
+    @Value("\${fs.kb.url}")
     lateinit var vectorpediaUrl: String
 
     @Bean
-    fun vectorpediaClient() = VectorpediaClient(vectorpediaUrl) {
+    fun vectorpediaClient() = KbClient(vectorpediaUrl) {
         install(HttpTimeout) {
             requestTimeoutMillis = 60000
         }

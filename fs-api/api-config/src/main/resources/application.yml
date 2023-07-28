@@ -29,7 +29,7 @@ fs:
     chaincode: ssm
     signerName: ${ssm.signer.admin.name}
     signerFile: ${ssm.signer.admin.key}
-  vectorpedia:
+  kb:
     url: http://localhost:9999
 
 i2:

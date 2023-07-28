@@ -11,7 +11,7 @@ import city.smartb.fs.s2.file.app.model.Statement
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
-import city.smartb.fs.s2.file.app.service.VectorpediaClient
+import city.smartb.fs.s2.file.app.service.KbClient
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -76,7 +76,7 @@ class FileEndpoint(
     private val logger by Logger()
 
     @Autowired(required = false)
-    private lateinit var vectorpediaClient: VectorpediaClient
+    private lateinit var kbClient: KbClient
 
     /**
      * Fetch a given file descriptor and content
@@ -180,9 +180,9 @@ class FileEndpoint(
         @RequestPart("file") file: FilePart
     ): FileUploadedEvent = runBlocking {
         val pathStr = cmd.path.toString()
-        logger.info("fileUpload: $pathStr")
-
+        logger.info("fileUpload: $cmd")
         val fileMetadata = s3Service.getObjectMetadata(pathStr)
+
         val fileExists = fileMetadata != null
         val fileId = fileMetadata?.get("id") ?: UUID.randomUUID().toString()
 
@@ -195,7 +195,7 @@ class FileEndpoint(
         )
 
         if (cmd.vectorize) {
-            vectorpediaClient.fileVectorize(cmd.path, fileByteArray, cmd.metadata)
+            kbClient.fileVectorize(cmd.path, fileByteArray, cmd.metadata)
         }
 
         if (mustBeSavedToSsm(cmd.path.directory)) {
@@ -252,7 +252,7 @@ class FileEndpoint(
         val fileContent = withContext(Dispatchers.IO) {
             s3Service.getObject(cmd.path.toString())?.readAllBytes()
         } ?: throw NotFoundException("File", cmd.path.toString())
-        vectorpediaClient.fileVectorize(cmd.path, fileContent, cmd.metadata)
+        kbClient.fileVectorize(cmd.path, fileContent, cmd.metadata)
 
         FileVectorizedEvent(cmd.path)
     }

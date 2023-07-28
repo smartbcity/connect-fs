@@ -19,12 +19,15 @@ import io.minio.errors.ErrorResponseException
 import io.minio.messages.Item
 import org.springframework.stereotype.Service
 import java.net.URLConnection
+import s2.spring.utils.logger.Logger
 
 @Service
 class S3Service(
     private val minioClient: MinioClient,
     private val s3BucketProvider: S3BucketProvider
 ) {
+
+    private val logger by Logger()
 
     suspend  fun putObject(path: String, content: ByteArray, metadata: Map<String, String>) {
         val contentType = metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }
@@ -59,9 +62,13 @@ class S3Service(
             .let(minioClient::listObjects)
     }
 
-    suspend fun getObjectMetadata(path: String) = statObject(path)
-        ?.userMetadata()
-        ?.mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
+    suspend fun getObjectMetadata(path: String): Map<String, String>? {
+        logger.debug("Getting metadata for $path")
+        return statObject(path)
+            ?.userMetadata()
+            ?.mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
+            .also { logger.debug("Got metadata for $path: $it") }
+    }
 
     suspend fun statObject(path: String): StatObjectResponse? {
         return try {

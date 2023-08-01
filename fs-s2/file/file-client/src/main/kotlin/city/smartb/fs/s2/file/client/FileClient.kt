@@ -8,6 +8,8 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionQuery
+import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionResult
 import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
@@ -40,5 +42,9 @@ class FileClient(
     suspend fun revokePublicDirectory(
         command: List<FileRevokePublicDirectoryCommand>
     ): List<FilePublicDirectoryRevokedEvent> = post("revokePublicDirectory", command)
+
+    suspend fun fileAskQuestion(
+        query: List<FileAskQuestionQuery>
+    ): List<FileAskQuestionResult> = post("fileAskQuestion", query)
 
 }

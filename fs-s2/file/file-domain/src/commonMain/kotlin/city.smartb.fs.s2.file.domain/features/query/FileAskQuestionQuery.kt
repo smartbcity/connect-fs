@@ -1,13 +1,13 @@
 package city.smartb.fs.s2.file.domain.features.query
 
-import city.smartb.registry.program.f2.chat.domain.model.ChatMessage
-import city.smartb.registry.program.f2.chat.domain.model.ChatMessageDTO
+import city.smartb.fs.s2.file.domain.model.FileAskMessage
+import city.smartb.fs.s2.file.domain.model.FileAskMessageDTO
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 import kotlin.js.JsName
-import city.smartb.registry.program.f2.chat.domain.model.ChatMetadata
-import city.smartb.registry.program.f2.chat.domain.model.ChatMetadataDTO
+import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
+import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadataDTO
 
 /**
  * Ask a question to files.
@@ -15,15 +15,15 @@ import city.smartb.registry.program.f2.chat.domain.model.ChatMetadataDTO
  * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 10
  */
-typealias ChatAskQuestionFunction = F2Function<ChatAskQuestionQuery, ChatAskQuestionResult>
+typealias FileAskQuestionFunction = F2Function<FileAskQuestionQuery, FileAskQuestionResult>
 
 /**
  * @d2 query
- * @parent [ChatAskQuestionFunction]
+ * @parent [FileAskQuestionFunction]
  */
 @JsExport
-@JsName("ChatAskQuestionQueryDTO")
-interface ChatAskQuestionQueryDTO {
+@JsName("FileAskQuestionQueryDTO")
+interface FileAskQuestionQueryDTO {
     /**
      * Question to ask to files.
      * @example "Where does the project take place?"
@@ -42,31 +42,31 @@ interface ChatAskQuestionQueryDTO {
      *  "type": "AI"
      * }]]
      */
-    val history: List<ChatMessageDTO>
+    val history: List<FileAskMessageDTO>
 
     /**
      * Optional filter to restrain the knowledge search on specific files.
      */
-    val metadata: ChatMetadataDTO
+    val metadata: FileAskMetadataDTO
 }
 
 /**
  * @d2 inherit
  */
 @Serializable
-data class ChatAskQuestionQuery(
+data class FileAskQuestionQuery(
     override val question: String,
-    override val history: List<ChatMessage>,
-    override val metadata: ChatMetadata,
-): ChatAskQuestionQueryDTO
+    override val history: List<FileAskMessage>,
+    override val metadata: FileAskMetadata,
+): FileAskQuestionQueryDTO
 
 /**
  * @d2 event
- * @parent [ChatAskQuestionFunction]
+ * @parent [FileAskQuestionFunction]
  */
 @JsExport
-@JsName("ChatAskQuestionResultDTO")
-interface ChatAskQuestionResultDTO {
+@JsName("FileAskQuestionResultDTO")
+interface FileAskQuestionResultDTO {
     /**
      * Generated response to the given question.
      * @example "The Banana4All project is primarily focused on implementing its initiatives in the banana-growing regions of Latin America,
@@ -85,6 +85,6 @@ interface ChatAskQuestionResultDTO {
  * @d2 inherit
  */
 @Serializable
-data class ChatAskQuestionResult(
+data class FileAskQuestionResult(
     override val item: String
-): ChatAskQuestionResultDTO
+): FileAskQuestionResultDTO

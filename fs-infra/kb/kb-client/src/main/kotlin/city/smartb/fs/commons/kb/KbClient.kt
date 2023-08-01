@@ -2,8 +2,6 @@ package city.smartb.fs.commons.kb
 
 import city.smartb.fs.commons.kb.domain.command.VectorAskFunction
 import city.smartb.fs.commons.kb.domain.command.VectorCreateFunction
-import city.smartb.registry.program.f2.chat.domain.model.ChatMessage
-import city.smartb.registry.program.f2.chat.domain.model.ChatMetadata
 import f2.client.F2Client
 import f2.client.function
 import f2.client.ktor.F2ClientBuilder
@@ -69,7 +67,6 @@ open class KbClient(val client: F2Client) {
             ).body()
         }
     }
-
 }
 
 

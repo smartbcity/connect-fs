@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 
 @JsExport
 @JsName("ChatMetadataDTO")
-interface ChatMetadataDTO {
+interface FileAskMetadataDTO {
     val targetedFiles: List<String>
 }
 
 @Serializable
-data class ChatMetadata(
+data class FileAskMetadata(
     override val targetedFiles: List<String>
-): ChatMetadataDTO
+): FileAskMetadataDTO

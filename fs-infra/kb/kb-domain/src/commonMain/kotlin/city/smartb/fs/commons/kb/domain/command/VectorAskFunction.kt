@@ -1,6 +1,7 @@
 package city.smartb.fs.commons.kb.domain.command
 
-import city.smartb.fs.s2.file.domain.model.FilePathDTO
+import city.smartb.fs.s2.file.domain.model.FileAskMessage
+import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
 import f2.dsl.cqrs.Event
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable
@@ -13,7 +14,7 @@ import kotlin.js.JsName
  * @parent [city.smartb.fs.commons.kb.domain.D2VectorF2Page]
  * @order 20
  */
-typealias VectorAskFunction = F2Function<VectorAskQueryDTOBase, Unit>
+typealias VectorAskFunction = F2Function<VectorAskQueryDTOBase, VectorAskedEventDTOBase>
 
 /**
  * @d2 command
@@ -23,8 +24,8 @@ typealias VectorAskFunction = F2Function<VectorAskQueryDTOBase, Unit>
 @JsName("VectorAskQueryDTO")
 interface VectorAskQueryDTO {
     val question: String
-    val messages: VectorAskMessageDTO
-    val metadata: Map<String, String>
+    val history: List<FileAskMessage>
+    val metadata: FileAskMetadata
 //    mapOf(
 //    "question" to question,
 //    "messages" to history.map { message -> mapOf(
@@ -62,8 +63,8 @@ class VectorAskMessageDTOBase(
 @Serializable
 data class VectorAskQueryDTOBase(
     override val question: String,
-    override val messages: VectorAskMessageDTOBase,
-    override val metadata: Map<String, String>
+    override val history: List<FileAskMessage>,
+    override val metadata: FileAskMetadata
 ): VectorAskQueryDTO
 
 /**
@@ -72,10 +73,14 @@ data class VectorAskQueryDTOBase(
  */
 @JsExport
 @JsName("VectorAskedEventDTO")
-interface VectorAskedEventDTO: Event
+interface VectorAskedEventDTO: Event {
+    val item: String
+}
 
 /**
  * @d2 inherit
  */
 @Serializable
-class VectorAskedEventDTOBase: VectorAskedEventDTO
+class VectorAskedEventDTOBase(
+    override val item: String
+): VectorAskedEventDTO

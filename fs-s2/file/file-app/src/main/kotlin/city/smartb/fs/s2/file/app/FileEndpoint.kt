@@ -4,6 +4,7 @@ import city.smartb.fs.api.config.Roles
 import city.smartb.fs.api.config.S3BucketProvider
 import city.smartb.fs.api.config.S3Properties
 import city.smartb.fs.commons.kb.KbClient
+import city.smartb.fs.commons.kb.domain.command.VectorAskQueryDTOBase
 import city.smartb.fs.commons.kb.domain.command.VectorCreateCommandDTOBase
 import city.smartb.fs.s2.file.app.config.FsSsmConfig
 import city.smartb.fs.s2.file.app.model.Policy
@@ -27,6 +28,8 @@ import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizeFunction
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizedEvent
+import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionFunction
+import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionResult
 import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
 import city.smartb.fs.s2.file.domain.features.query.FileGetFunction
 import city.smartb.fs.s2.file.domain.features.query.FileGetResult
@@ -40,6 +43,7 @@ import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.invokeWith
 import f2.spring.exception.NotFoundException
+import jakarta.annotation.security.PermitAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -232,6 +236,19 @@ class FileEndpoint(
             metadata = metadata
         ).invokeWith(kbClient.vectorCreateFunction())
         logger.debug("File $path vectorized")
+    }
+
+    @PermitAll
+    @Bean
+    fun fileAskQuestion(): FileAskQuestionFunction = f2Function { query ->
+        logger.info("chatAskQuestion: $query")
+        VectorAskQueryDTOBase(
+            question = query.question,
+            metadata = query.metadata,
+            history = query.history
+        ).invokeWith(kbClient.knowledgeAsk())
+            .let { FileAskQuestionResult(it.item) }
+
     }
 
     /**

@@ -14,6 +14,7 @@ import city.smartb.fs.s2.file.domain.features.query.FileGetResult
 import city.smartb.fs.s2.file.domain.features.query.FileListQuery
 import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import io.ktor.client.HttpClientConfig
+import io.ktor.utils.io.ByteReadChannel
 
 class FileClient(
     url: String,
@@ -21,7 +22,7 @@ class FileClient(
 ): Client(url, block) {
     suspend fun fileGet(command: List<FileGetQuery>): List<FileGetResult> = post("fileGet", command)
 
-    suspend fun fileDownload(command: FileDownloadQuery): ByteArray? = post("fileDownload", command)
+    suspend fun fileDownload(command: FileDownloadQuery): ByteReadChannel = post("fileDownload", command)
 
     suspend fun fileList(command: List<FileListQuery>): List<FileListResult> = post("fileList", command)
 

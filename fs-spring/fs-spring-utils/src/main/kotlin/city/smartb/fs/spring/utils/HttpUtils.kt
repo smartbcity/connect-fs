@@ -3,6 +3,7 @@ package city.smartb.fs.spring.utils
 import city.smartb.fs.s2.file.client.FileClient
 import city.smartb.fs.s2.file.domain.features.query.FileDownloadQuery
 import city.smartb.fs.s2.file.domain.model.FilePathDTO
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import org.springframework.http.ContentDisposition
 import org.springframework.http.MediaType
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -22,7 +23,7 @@ suspend fun ServerHttpResponse.serveFile(
         objectId = path.objectId,
         directory = path.directory,
         name = path.name
-    ).let { fileClient.fileDownload(it) }
+    ).let { fileClient.fileDownload(it).toInputStream().readAllBytes() }
 }
 
 fun ServerHttpResponse.configureHeadersForFile(name: String) {

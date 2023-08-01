@@ -1,6 +1,7 @@
 package city.smartb.fs.commons.kb
 
 import city.smartb.fs.commons.kb.domain.command.VectorAskFunction
+import city.smartb.fs.commons.kb.domain.command.VectorAskedEventDTOBase
 import city.smartb.fs.commons.kb.domain.command.VectorCreateFunction
 import f2.client.F2Client
 import f2.client.function
@@ -10,6 +11,7 @@ import f2.client.ktor.http.F2DefaultJson
 import f2.client.ktor.http.HttpF2Client
 import f2.dsl.fnc.F2Function
 import f2.dsl.fnc.F2SupplierSingle
+import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.f2SupplierSingle
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
@@ -20,10 +22,17 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.forms.FormPart
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
 
 //TODO Make it multiplaform
@@ -42,18 +51,52 @@ fun kbClient(urlBase: String, /*accessToken: String*/): F2SupplierSingle<KbClien
             install(HttpTimeout) {
                 requestTimeoutMillis = 60000
             }
-            if(log.isDebugEnabled) {
+//            if(log.isDebugEnabled) {
                 install(Logging) {
                     logger = Logger.DEFAULT
-                    level = LogLevel.HEADERS
+                    level = LogLevel.ALL
                 }
-            }
+//            }
         }
     )
 }
 
 open class KbClient(val client: F2Client) {
-    fun knowledgeAsk(): VectorAskFunction = client.function(this::knowledgeAsk.name)
+//    fun knowledgeAsk(): VectorAskFunction = client.function("ask")
+    fun knowledgeAsk(): VectorAskFunction = F2Function { msgs ->
+        msgs.map { cmd ->
+            val httpF2Client = (client as HttpF2Client)
+            val tt: String = httpF2Client.httpClient.post(
+                "${httpF2Client.urlBase}/ask"
+            ){
+                headers.append(HttpHeaders.ContentType, "application/json")
+                headers.append(HttpHeaders.Accept, "application/json")
+                setBody(
+                buildJsonObject {
+                    put("question", cmd.question)
+                    put("messages", buildJsonArray{
+                        cmd.history.forEach { message ->
+                            add(buildJsonObject {
+                                put("content", message.content)
+                                put("type", message.type)
+                                put("additional_kwargs", buildJsonObject{})
+                            })
+                        }
+                    })
+                    put("metadata", buildJsonObject {
+                        if (cmd.metadata.targetedFiles.isNotEmpty()) {
+
+                            put("targeted_files",
+                                buildJsonArray {  cmd.metadata.targetedFiles.forEach { add(it) } })
+                        } else {
+                            put("", "")
+                        }
+                    })
+                })
+            }.body()!!
+            VectorAskedEventDTOBase(tt)
+        }
+    }
 
     fun vectorCreateFunction(): VectorCreateFunction = F2Function  { msgs ->
         msgs.map { cmd ->

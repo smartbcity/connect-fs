@@ -241,7 +241,7 @@ class FileEndpoint(
     @PermitAll
     @Bean
     fun fileAskQuestion(): FileAskQuestionFunction = f2Function { query ->
-        logger.info("chatAskQuestion: $query")
+        logger.info("fileAskQuestion: $query")
         VectorAskQueryDTOBase(
             question = query.question,
             metadata = query.metadata,

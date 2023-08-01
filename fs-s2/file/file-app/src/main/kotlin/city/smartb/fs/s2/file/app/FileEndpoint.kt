@@ -34,11 +34,12 @@ import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.multipart.FilePart
-import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.net.URLConnection
 import java.security.MessageDigest
 import java.util.Base64
@@ -103,25 +105,26 @@ class FileEndpoint(
 
     @RolesAllowed(Roles.READ_FILE)
     @PostMapping("/fileDownload", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
-    fun fileDownload(
-        @RequestBody query: FileDownloadQuery,
-        response: ServerHttpResponse
-    ): ByteArray? {
+    fun fileDownload(@RequestBody query: FileDownloadQuery): ResponseEntity<InputStreamResource> {
         val path = FilePath(
             objectType = query.objectType,
             objectId = query.objectId,
             directory = query.directory,
             name = query.name,
         ).toString()
+        logger.info("fileDownload: $path")
 
-        response.headers.contentDisposition = ContentDisposition.attachment().filename(query.name).build()
-        response.headers.contentType = URLConnection.guessContentTypeFromName(query.name)
+        val contentType = URLConnection.guessContentTypeFromName(query.name)
             ?.split("/")
             ?.takeIf { it.size == 2 }
             ?.let { (type, subtype) -> MediaType(type, subtype) }
             ?: MediaType.APPLICATION_OCTET_STREAM
 
-        return s3Service.getObject(path)?.readAllBytes()
+        val fileStream = s3Service.getObject(path) ?: InputStream.nullInputStream()
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_TYPE, contentType.toString())
+            .body(InputStreamResource(fileStream))
     }
 
     /**

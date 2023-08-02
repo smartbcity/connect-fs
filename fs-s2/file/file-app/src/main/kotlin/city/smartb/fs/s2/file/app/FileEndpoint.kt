@@ -38,7 +38,6 @@ import city.smartb.fs.s2.file.domain.features.query.FileListResult
 import city.smartb.fs.s2.file.domain.model.File
 import city.smartb.fs.s2.file.domain.model.FilePath
 import city.smartb.fs.spring.utils.contentByteArray
-import city.smartb.fs.spring.utils.encodeToB64
 import city.smartb.fs.spring.utils.hash
 import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.invokeWith
@@ -97,14 +96,10 @@ class FileEndpoint(
         logger.info("fileGet: $path")
 
         val metadata = s3Service.getObjectMetadata(path)
-            ?: return@f2Function FileGetResult(null, null)
-
-        val content = s3Service.getObject(path)!!.use { input ->
-            input.readBytes().encodeToB64()
-        }
+            ?: return@f2Function FileGetResult(null)
 
         FileGetResult(
-            file = File(
+            item = File(
                 id = metadata["id"].orEmpty(),
                 path = FilePath(
                     objectType = query.objectType,
@@ -115,7 +110,6 @@ class FileEndpoint(
                 url = query.buildUrl(),
                 metadata = metadata
             ),
-            content = content
         )
     }
 

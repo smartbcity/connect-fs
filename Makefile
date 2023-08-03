@@ -20,7 +20,7 @@ package-kotlin:
 	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build publishToMavenLocal publish -x test
 
 docker-fs-api-build:
-	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew ${GATEWAY_PACKAGE}:bootBuildImage -x test
+	VERSION=${VERSION} IMAGE_NAME=${GATEWAY_NAME} ./gradlew build ${GATEWAY_PACKAGE}:bootBuildImage -x test
 
 docker-fs-api-push:
 	@docker push ${GATEWAY_IMG}

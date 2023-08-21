@@ -26,7 +26,7 @@ object Versions {
 	const val springBoot = PluginVersions.springBoot
 	const val springFramework = FixersVersions.Spring.framework
 	const val ktor = FixersVersions.Kotlin.ktor
-	const val minio = "8.3.7"
+	const val minio = "8.5.5"
 }
 
 object Repo {

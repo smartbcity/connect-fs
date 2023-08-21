@@ -229,6 +229,16 @@ class FileEndpoint(
             file = fileByteArray,
             metadata = metadata
         ).invokeWith(kbClient.vectorCreateFunction())
+
+        val newMetadata = s3Service.getObjectMetadata(path.toString())
+            .orEmpty()
+            .plus(metadata.sanitizedMetadata())
+            .plus("vectorized" to "true")
+
+        println(newMetadata.toJson())
+
+        s3Service.copyObject(path.toString(), newMetadata)
+
         logger.debug("File $path vectorized")
     }
 

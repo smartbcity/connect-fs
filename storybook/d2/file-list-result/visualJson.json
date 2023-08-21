@@ -12,6 +12,9 @@
       "Pragma" : "no-cache",
       "Content-Type" : "image/jpeg",
       "secret" : "blblbl"
-    }
+    },
+    "size" : 69950,
+    "vectorized" : false,
+    "lastModificationDate" : 1692627519000
   } ]
 }

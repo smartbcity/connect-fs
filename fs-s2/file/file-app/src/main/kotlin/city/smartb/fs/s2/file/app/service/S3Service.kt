@@ -32,7 +32,7 @@ class S3Service(
 
     private val logger by Logger()
 
-    suspend  fun putObject(path: String, content: ByteArray, metadata: Map<String, String>) {
+    suspend fun putObject(path: String, content: ByteArray, metadata: Map<String, String>) {
         val contentType = metadata.entries.firstOrNull { (key) -> key.lowercase() == "content-type" }
             ?.value
             ?: URLConnection.guessContentTypeFromName(path)
@@ -47,7 +47,7 @@ class S3Service(
             .let(minioClient::putObject)
     }
 
-    suspend  fun removeObject(path: String) {
+    suspend fun removeObject(path: String) {
         RemoveObjectArgs.builder()
             .bucket(s3BucketProvider.getBucket())
             .`object`(path)

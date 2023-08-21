@@ -11,9 +11,11 @@ import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
 import city.smartb.fs.s2.file.app.model.S3Effect
 import city.smartb.fs.s2.file.app.model.Statement
+import city.smartb.fs.s2.file.app.model.sanitizedMetadata
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
+import city.smartb.fs.s2.file.app.utils.toJson
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -95,7 +97,10 @@ class FileEndpoint(
         val path = query.toString()
         logger.info("fileGet: $path")
 
-        val metadata = s3Service.getObjectMetadata(path)
+        val objectStats = s3Service.statObject(path)
+        val metadata = objectStats
+            ?.userMetadata()
+            ?.sanitizedMetadata()
             ?: return@f2Function FileGetResult(null)
 
         FileGetResult(
@@ -108,7 +113,10 @@ class FileEndpoint(
                     name = query.name,
                 ),
                 url = query.buildUrl(),
-                metadata = metadata
+                metadata = metadata,
+                size = objectStats.size(),
+                vectorized = metadata[File::vectorized.name].toBoolean(),
+                lastModificationDate = objectStats.lastModified().toInstant().toEpochMilli()
             ),
         )
     }

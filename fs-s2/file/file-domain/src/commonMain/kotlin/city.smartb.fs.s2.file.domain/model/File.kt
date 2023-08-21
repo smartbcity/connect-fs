@@ -37,5 +37,23 @@ data class File(
      *  "secret": "blblbl"
      *  }
      */
-    val metadata: Map<String, String>
+    val metadata: Map<String, String>,
+
+    /**
+     * Size of the file in bytes
+     * @example 69950
+     */
+    val size: Long,
+
+    /**
+     * Whether the file has been vectorized and sent to a knowledge-base
+     * @example false
+     */
+    val vectorized: Boolean,
+
+    /**
+     * Date of the last modification of the file, formatted as UNIX timestamp in ms
+     * @example 1692627519000
+     */
+    val lastModificationDate: Long
 )

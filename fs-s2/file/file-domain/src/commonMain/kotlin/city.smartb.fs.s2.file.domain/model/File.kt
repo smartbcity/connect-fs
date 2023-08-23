@@ -24,8 +24,14 @@ data class File(
     val path: FilePath,
 
     /**
+     * Stringified path of the file within the S3 bucket
+     * @example "MyAwesomeObject/91541047-5da8-4161-af79-3fd367fc014e/image/main.jpg"
+     */
+    val pathStr: String,
+
+    /**
      * External URL to access the file
-     * @example "https://s3.myproject.smart-b.io/myBucket/myObjectType/ObjectId/mediaDirectory/FileName.jpg"
+     * @example "https://s3.myproject.smart-b.io/myBucket/MyAwesomeObject/91541047-5da8-4161-af79-3fd367fc014e/image/main.jpg"
      */
     val url: String,
 

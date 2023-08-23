@@ -94,10 +94,10 @@ class FileEndpoint(
     @RolesAllowed(Roles.READ_FILE)
     @Bean
     fun fileGet(): FileGetFunction = f2Function { query ->
-        val path = query.toString()
-        logger.info("fileGet: $path")
+        val pathStr = query.toString()
+        logger.info("fileGet: $pathStr")
 
-        val objectStats = s3Service.statObject(path)
+        val objectStats = s3Service.statObject(pathStr)
         val metadata = objectStats
             ?.userMetadata()
             ?.sanitizedMetadata()
@@ -106,12 +106,8 @@ class FileEndpoint(
         FileGetResult(
             item = File(
                 id = metadata["id"].orEmpty(),
-                path = FilePath(
-                    objectType = query.objectType,
-                    objectId = query.objectId,
-                    directory = query.directory,
-                    name = query.name,
-                ),
+                path = query,
+                pathStr = pathStr,
                 url = query.buildUrl(),
                 metadata = metadata,
                 isDirectory = false,

@@ -11,6 +11,7 @@ suspend fun Item.toFile(buildUrl: suspend (FilePath) -> String): File {
     return File(
         id = metadata[File::id.name].orEmpty(),
         path = path,
+        pathStr = path.toString(),
         url = buildUrl(path),
         metadata = metadata,
         isDirectory = isDir,

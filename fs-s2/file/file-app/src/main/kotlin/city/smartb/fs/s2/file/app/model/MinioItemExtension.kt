@@ -13,9 +13,10 @@ suspend fun Item.toFile(buildUrl: suspend (FilePath) -> String): File {
         path = path,
         url = buildUrl(path),
         metadata = metadata,
+        isDirectory = isDir,
         size = size(),
         vectorized = metadata[File::vectorized.name].toBoolean(),
-        lastModificationDate = lastModified().toInstant().toEpochMilli()
+        lastModificationDate = if (isDir) 0 else lastModified().toInstant().toEpochMilli()
     )
 }
 

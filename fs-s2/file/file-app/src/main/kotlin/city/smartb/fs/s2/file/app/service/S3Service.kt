@@ -71,11 +71,11 @@ class S3Service(
             .let(minioClient::copyObject)
     }
 
-    suspend fun listObjects(prefix: String): Iterable<Result<Item>> {
+    suspend fun listObjects(prefix: String, recursive: Boolean): Iterable<Result<Item>> {
         return ListObjectsArgs.builder()
             .bucket(s3BucketProvider.getBucket())
             .prefix(prefix)
-            .recursive(true)
+            .recursive(recursive)
             .includeUserMetadata(true)
             .build()
             .let(minioClient::listObjects)

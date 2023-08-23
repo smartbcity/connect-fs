@@ -114,6 +114,7 @@ class FileEndpoint(
                 ),
                 url = query.buildUrl(),
                 metadata = metadata,
+                isDirectory = false,
                 size = objectStats.size(),
                 vectorized = metadata[File::vectorized.name].toBoolean(),
                 lastModificationDate = objectStats.lastModified().toInstant().toEpochMilli()
@@ -153,13 +154,13 @@ class FileEndpoint(
     fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
         val prefix = FilePath(
-            objectType = query.objectType,
-            objectId = query.objectId,
+            objectType = query.objectType ?: "",
+            objectId = query.objectId ?: "",
             directory = query.directory ?: "",
             name = ""
         ).toPartialPrefix()
 
-        s3Service.listObjects(prefix)
+        s3Service.listObjects(prefix, query.recursive)
             .map { obj -> obj.get().toFile { it.buildUrl() } }
             .let(::FileListResult)
     }

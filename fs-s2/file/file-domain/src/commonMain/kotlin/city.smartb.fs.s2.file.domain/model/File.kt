@@ -40,6 +40,12 @@ data class File(
     val metadata: Map<String, String>,
 
     /**
+     * True if this is a directory
+     * @example false
+     */
+    val isDirectory: Boolean,
+
+    /**
      * Size of the file in bytes
      * @example 69950
      */

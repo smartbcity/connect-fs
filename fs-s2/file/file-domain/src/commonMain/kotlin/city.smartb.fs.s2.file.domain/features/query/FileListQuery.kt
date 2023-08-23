@@ -23,19 +23,26 @@ data class FileListQuery(
      * Type of object the file are attached to.
      * @example [city.smartb.fs.s2.file.domain.model.FilePath.objectType]
      */
-    val objectType: String,
+    val objectType: String?,
 
     /**
      * Identifier of the object the file are attached to.
      * @example [city.smartb.fs.s2.file.domain.model.FilePath.objectId]
      */
-    val objectId: String,
+    val objectId: String?,
 
     /**
      * Directory containing the files.
      * @example [city.smartb.fs.s2.file.domain.model.FilePath.directory]
      */
-    val directory: String?
+    val directory: String?,
+
+    /**
+     * If true, fetch all files of subdirectories instead of said directories
+     * @example false
+     * @default true
+     */
+    val recursive: Boolean = true
 )
 
 /**

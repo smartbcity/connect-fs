@@ -7,7 +7,7 @@ Type: `FileListQuery`
 
 ---
 
-***objectType*** `String`
+***objectType*** `String?`
 
 Type of object the file are attached to.
 
@@ -15,7 +15,7 @@ Type of object the file are attached to.
 
 ---
 
-***objectId*** `String`
+***objectId*** `String?`
 
 Identifier of the object the file are attached to.
 
@@ -26,5 +26,13 @@ Identifier of the object the file are attached to.
 ***directory*** `String?`
 
 Directory containing the files.
+
+
+
+---
+
+***recursive*** `Boolean` (default: true)
+
+If true, fetch all files of subdirectories instead of said directories
 
 

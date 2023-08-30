@@ -11,9 +11,16 @@ suspend fun Item.toFile(buildUrl: suspend (FilePath) -> String): File {
     return File(
         id = metadata[File::id.name].orEmpty(),
         path = path,
+        pathStr = path.toString(),
         url = buildUrl(path),
-        metadata = metadata
+        metadata = metadata,
+        isDirectory = isDir,
+        size = size(),
+        vectorized = metadata[File::vectorized.name].toBoolean(),
+        lastModificationDate = if (isDir) 0 else lastModified().toInstant().toEpochMilli()
     )
 }
 
-fun Item.sanitizedMetadata() = userMetadata().orEmpty().mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }
+fun Item.sanitizedMetadata() = userMetadata().orEmpty().sanitizedMetadata()
+
+fun Map<String, String>.sanitizedMetadata() = this.mapKeys { (key) -> key.lowercase().removePrefix("x-amz-meta-") }

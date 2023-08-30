@@ -55,7 +55,7 @@ data class FilePath(
 ): FilePathDTO {
     companion object {
         fun from(path: String): FilePath {
-            val (objectType, objectId, directory, name) = path.split("/", limit = 4)
+            val (objectType, objectId, directory, name) = path.split("/", limit = 4).padEnd(4)
             return FilePath(
                 objectType = objectType,
                 objectId = objectId,
@@ -63,14 +63,17 @@ data class FilePath(
                 name = name
             )
         }
+
+        private fun List<String>.padEnd(size: Int) = if (this.size < size) {
+            this + List(size - this.size) { "" }
+        } else this
     }
 
     override fun toString() = "$objectType/$objectId/$directory/$name"
-
-    fun toPartialPrefix(trailingSlash: Boolean = true) = toString()
         .substringBefore("//") // stop before first empty parameter
         .removeSuffix("/")
-        .plus(if (trailingSlash) "/" else "")
+
+    fun toPartialPrefix(trailingSlash: Boolean = true) = toString().plus(if (trailingSlash) "/" else "")
 
     fun buildUrl(baseUrl: String, bucket: String, dnsStyle: Boolean) = if (dnsStyle) {
         val (scheme, host) = baseUrl.removeSuffix("/").split("://")

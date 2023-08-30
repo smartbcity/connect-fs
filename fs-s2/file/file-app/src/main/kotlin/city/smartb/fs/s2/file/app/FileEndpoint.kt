@@ -11,9 +11,11 @@ import city.smartb.fs.s2.file.app.model.Policy
 import city.smartb.fs.s2.file.app.model.S3Action
 import city.smartb.fs.s2.file.app.model.S3Effect
 import city.smartb.fs.s2.file.app.model.Statement
+import city.smartb.fs.s2.file.app.model.sanitizedMetadata
 import city.smartb.fs.s2.file.app.model.toFile
 import city.smartb.fs.s2.file.app.model.toFileUploadedEvent
 import city.smartb.fs.s2.file.app.service.S3Service
+import city.smartb.fs.s2.file.app.utils.toJson
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
@@ -92,23 +94,26 @@ class FileEndpoint(
     @RolesAllowed(Roles.READ_FILE)
     @Bean
     fun fileGet(): FileGetFunction = f2Function { query ->
-        val path = query.toString()
-        logger.info("fileGet: $path")
+        val pathStr = query.toString()
+        logger.info("fileGet: $pathStr")
 
-        val metadata = s3Service.getObjectMetadata(path)
+        val objectStats = s3Service.statObject(pathStr)
+        val metadata = objectStats
+            ?.userMetadata()
+            ?.sanitizedMetadata()
             ?: return@f2Function FileGetResult(null)
 
         FileGetResult(
             item = File(
                 id = metadata["id"].orEmpty(),
-                path = FilePath(
-                    objectType = query.objectType,
-                    objectId = query.objectId,
-                    directory = query.directory,
-                    name = query.name,
-                ),
+                path = query,
+                pathStr = pathStr,
                 url = query.buildUrl(),
-                metadata = metadata
+                metadata = metadata,
+                isDirectory = false,
+                size = objectStats.size(),
+                vectorized = metadata[File::vectorized.name].toBoolean(),
+                lastModificationDate = objectStats.lastModified().toInstant().toEpochMilli()
             ),
         )
     }
@@ -145,13 +150,13 @@ class FileEndpoint(
     fun fileList(): FileListFunction = f2Function { query ->
         logger.info("fileList: $query")
         val prefix = FilePath(
-            objectType = query.objectType,
-            objectId = query.objectId,
+            objectType = query.objectType ?: "",
+            objectId = query.objectId ?: "",
             directory = query.directory ?: "",
             name = ""
         ).toPartialPrefix()
 
-        s3Service.listObjects(prefix)
+        s3Service.listObjects(prefix, query.recursive)
             .map { obj -> obj.get().toFile { it.buildUrl() } }
             .let(::FileListResult)
     }
@@ -229,6 +234,16 @@ class FileEndpoint(
             file = fileByteArray,
             metadata = metadata
         ).invokeWith(kbClient.vectorCreateFunction())
+
+        val newMetadata = s3Service.getObjectMetadata(path.toString())
+            .orEmpty()
+            .plus(metadata.sanitizedMetadata())
+            .plus("vectorized" to "true")
+
+        println(newMetadata.toJson())
+
+        s3Service.copyObject(path.toString(), newMetadata)
+
         logger.debug("File $path vectorized")
     }
 

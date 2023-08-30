@@ -2,12 +2,12 @@ package city.smartb.fs.s2.file.domain.features.query
 
 import city.smartb.fs.s2.file.domain.model.FileAskMessage
 import city.smartb.fs.s2.file.domain.model.FileAskMessageDTO
+import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
+import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadataDTO
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 import kotlin.js.JsName
-import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
-import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadataDTO
 
 /**
  * Ask a question to files.
@@ -36,9 +36,7 @@ interface FileAskQuestionQueryDTO {
      *  "content": "What is the goal of the project?",
      *  "type": "HUMAN"
      * }, {
-     *  "content": "Banana4All is an innovative initiative that aims to revolutionize the banana industry by focusing on making it more
-     *  efficient and reducing its ecological impact. The project combines cutting-edge technologies, sustainable practices, and community
-     *  engagement to create a holistic approach towards a greener and more sustainable banana industry.",
+     *  "content": "Banana4All is an innovative initiative that aims to revolutionize the banana industry by focusing on making it more efficient and reducing its ecological impact. The project combines cutting-edge technologies, sustainable practices, and community engagement to create a holistic approach towards a greener and more sustainable banana industry.",
      *  "type": "AI"
      * }]]
      */

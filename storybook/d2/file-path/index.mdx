@@ -1,8 +1,8 @@
-import { CodeHighlighter, DescriptedCode } from '@smartb/g2-documentation'
-import FilePathDesc from './desc.md'
+import { CodeHighlighter, SegmentedContainer } from '@smartb/g2-documentation'
+import FilePathDesc from './desc.mdx'
 import FilePathVisualJson from './visualJson.json'
 
-<DescriptedCode
+<SegmentedContainer
   leftElement={<FilePathDesc />}
   leftContainerProps={{}}
   rightElement={
@@ -15,4 +15,8 @@ import FilePathVisualJson from './visualJson.json'
   rightContainerProps={{}}
 />
 
----
+<div
+  class={"spacer"}
+/>
+
+

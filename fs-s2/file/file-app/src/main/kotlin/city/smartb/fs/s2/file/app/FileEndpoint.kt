@@ -28,6 +28,7 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileVectorizeCommand
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizeFunction
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionFunction
@@ -45,7 +46,12 @@ import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.invokeWith
 import f2.spring.exception.NotFoundException
 import jakarta.annotation.security.PermitAll
+import java.io.InputStream
+import java.net.URLConnection
+import java.util.UUID
+import javax.annotation.security.RolesAllowed
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,10 +69,6 @@ import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
-import java.io.InputStream
-import java.net.URLConnection
-import java.util.UUID
-import javax.annotation.security.RolesAllowed
 
 /**
  * @d2 service
@@ -300,6 +302,20 @@ class FileEndpoint(
         vectorize(cmd.path, cmd.metadata, fileContent)
 
         FileVectorizedEvent(cmd.path)
+    }
+
+
+    /**
+     * Vectorize files and save them into a vector-store
+     */
+    @RolesAllowed(Roles.WRITE_FILE)
+    @PostMapping("/vectorizeAll")
+    suspend fun vectorizeAll(
+        @RequestPart("commands") commands: List<FileVectorizeCommand>,
+    ){
+        commands.forEach { command ->
+            fileVectorize().invoke(flowOf(command))
+        }
     }
 
     /**

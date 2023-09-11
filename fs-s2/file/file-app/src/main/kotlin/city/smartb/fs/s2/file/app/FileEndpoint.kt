@@ -51,7 +51,6 @@ import java.net.URLConnection
 import java.util.UUID
 import javax.annotation.security.RolesAllowed
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -311,10 +310,10 @@ class FileEndpoint(
     @RolesAllowed(Roles.WRITE_FILE)
     @PostMapping("/vectorizeAll")
     suspend fun vectorizeAll(
-        @RequestPart("commands") commands: List<FileVectorizeCommand>,
+        @RequestBody commands: List<FileVectorizeCommand>,
     ){
         commands.forEach { command ->
-            fileVectorize().invoke(flowOf(command))
+            command.invokeWith(fileVectorize())
         }
     }
 

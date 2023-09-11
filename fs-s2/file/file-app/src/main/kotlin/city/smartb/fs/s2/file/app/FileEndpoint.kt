@@ -28,7 +28,6 @@ import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevoked
 import city.smartb.fs.s2.file.domain.features.command.FileRevokePublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileUploadCommand
 import city.smartb.fs.s2.file.domain.features.command.FileUploadedEvent
-import city.smartb.fs.s2.file.domain.features.command.FileVectorizeCommand
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizeFunction
 import city.smartb.fs.s2.file.domain.features.command.FileVectorizedEvent
 import city.smartb.fs.s2.file.domain.features.query.FileAskQuestionFunction
@@ -301,20 +300,6 @@ class FileEndpoint(
         vectorize(cmd.path, cmd.metadata, fileContent)
 
         FileVectorizedEvent(cmd.path)
-    }
-
-
-    /**
-     * Vectorize files and save them into a vector-store
-     */
-    @RolesAllowed(Roles.WRITE_FILE)
-    @PostMapping("/vectorizeAll")
-    suspend fun vectorizeAll(
-        @RequestBody commands: List<FileVectorizeCommand>,
-    ){
-        commands.forEach { command ->
-            command.invokeWith(fileVectorize())
-        }
     }
 
     /**

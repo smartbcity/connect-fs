@@ -27,7 +27,6 @@ class FileModelView: View<FileEvent, FileEntity> {
 		status = FileState.Exists
 	)
 
-
 	private fun FileEntity.logged(event: FileLoggedEvent) = copy(
 		name = event.path.name,
 		objectType = event.path.objectType,
@@ -36,7 +35,6 @@ class FileModelView: View<FileEvent, FileEntity> {
 		metadata = event.metadata,
 		uploadDate = event.time
 	)
-
 
 	private fun FileEntity.delete(event: FileDeletedEvent) = copy(
 		status = FileState.Deleted

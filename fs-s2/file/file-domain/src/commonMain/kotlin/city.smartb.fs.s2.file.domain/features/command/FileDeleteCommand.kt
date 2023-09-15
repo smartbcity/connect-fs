@@ -3,23 +3,42 @@ package city.smartb.fs.s2.file.domain.features.command
 import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.model.FilePath
 import f2.dsl.fnc.F2Function
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import s2.dsl.automate.S2Command
 
 /**
- * Delete a given file.
+ * Delete all files matching a given path.
  * @d2 function
  * @parent [city.smartb.fs.s2.file.domain.D2FilePage]
  * @order 20
  */
-typealias FileDeleteFunction = F2Function<FileDeleteCommand, FileDeletedEvent>
+typealias FileDeleteFunction = F2Function<FileDeleteCommand, FileDeletedEvents>
 
 /**
  * @d2 command
  * @parent [FileDeleteFunction]
  */
-typealias FileDeleteCommand = FilePath
+data class FileDeleteCommand(
+	/**
+	 * @ref [city.smartb.fs.s2.file.domain.model.FilePath.objectType]
+	 */
+	val objectType: String?,
+
+	/**
+	 * @ref [city.smartb.fs.s2.file.domain.model.FilePath.objectId]
+	 */
+	val objectId: String?,
+
+	/**
+	 * @ref [city.smartb.fs.s2.file.domain.model.FilePath.directory]
+	 */
+	val directory: String?,
+
+	/**
+	 * @ref [city.smartb.fs.s2.file.domain.model.FilePath.name]
+	 */
+	val name: String?
+)
 
 @Serializable
 data class FileDeleteByIdCommand(
@@ -31,7 +50,11 @@ data class FileDeleteByIdCommand(
  * @parent [FileDeleteFunction]
  */
 @Serializable
-@SerialName("FileDeletedEvent")
+data class FileDeletedEvents(
+	val items: List<FileDeletedEvent>
+)
+
+@Serializable
 data class FileDeletedEvent(
 	/**
 	 * Identifier of the deleted file.

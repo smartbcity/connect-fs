@@ -1,7 +1,6 @@
 package city.smartb.fs.s2.file.domain.automate
 
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
-import city.smartb.fs.s2.file.domain.features.command.FileDeleteCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
 import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
 import city.smartb.fs.s2.file.domain.features.command.FileInitiatedEvent

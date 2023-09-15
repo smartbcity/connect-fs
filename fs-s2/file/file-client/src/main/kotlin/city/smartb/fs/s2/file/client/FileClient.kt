@@ -1,7 +1,7 @@
 package city.smartb.fs.s2.file.client
 
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteCommand
-import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvents
 import city.smartb.fs.s2.file.domain.features.command.FileInitPublicDirectoryCommand
 import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryInitializedEvent
 import city.smartb.fs.s2.file.domain.features.command.FilePublicDirectoryRevokedEvent
@@ -33,7 +33,7 @@ class FileClient(
         file("file", file, command.path.name)
     }
 
-    suspend fun fileDelete(command: List<FileDeleteCommand>): List<FileDeletedEvent> = post("fileDelete", command)
+    suspend fun fileDelete(command: List<FileDeleteCommand>): List<FileDeletedEvents> = post("fileDelete", command)
 
     suspend fun initPublicDirectory(
         command: List<FileInitPublicDirectoryCommand>

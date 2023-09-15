@@ -20,6 +20,7 @@ import city.smartb.fs.s2.file.domain.automate.FileId
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteFunction
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent
+import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvents
 import city.smartb.fs.s2.file.domain.features.command.FileInitCommand
 import city.smartb.fs.s2.file.domain.features.command.FileInitPublicDirectoryFunction
 import city.smartb.fs.s2.file.domain.features.command.FileLogCommand
@@ -45,11 +46,10 @@ import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.invokeWith
 import f2.spring.exception.NotFoundException
 import jakarta.annotation.security.PermitAll
-import java.io.InputStream
-import java.net.URLConnection
-import java.util.UUID
-import javax.annotation.security.RolesAllowed
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -67,6 +67,10 @@ import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import s2.spring.utils.logger.Logger
+import java.io.InputStream
+import java.net.URLConnection
+import java.util.UUID
+import javax.annotation.security.RolesAllowed
 
 /**
  * @d2 service
@@ -265,24 +269,39 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.WRITE_FILE)
     @Bean
-    fun fileDelete(): FileDeleteFunction = f2Function { cmd ->
-        val pathStr = cmd.toString()
-        logger.info("fileDelete: $pathStr")
+    fun fileDelete(): FileDeleteFunction = f2Function { command ->
+        val commandPathStr = FilePath(
+            objectType = command.objectType ?: "",
+            objectId = command.objectId ?: "",
+            directory = command.directory ?: "",
+            name = command.name ?: ""
+        ).toPartialPrefix(trailingSlash = command.name == null)
+        logger.info("fileDelete: $commandPathStr")
 
-        val metadata = s3Service.getObjectMetadata(pathStr)
-            ?: throw IllegalArgumentException("File not found at path [$pathStr]")
+        val events = s3Service.listObjects(commandPathStr, true).also { objects ->
+            val count = objects.count()
+            if (count == 0) {
+                throw IllegalArgumentException("File not found at path [$commandPathStr]")
+            } else {
+                logger.info("Found $count files to delete")
+            }
+        }.mapAsync { obj ->
+            val file = obj.get().toFile { it.buildUrl() }
+            val metadata = s3Service.getObjectMetadata(file.pathStr)!!
+            val id = metadata["id"]!!
 
-        val id = metadata["id"]!!
+            s3Service.removeObject(file.pathStr)
+            if (mustBeSavedToSsm(file.path.directory)) {
+                fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
+            }
 
-        s3Service.removeObject(pathStr)
-        if (mustBeSavedToSsm(cmd.directory)) {
-            fileDeciderSourcingImpl.delete(FileDeleteByIdCommand(id = id))
+            FileDeletedEvent(
+                id = id,
+                path = file.path
+            )
         }
 
-        FileDeletedEvent(
-            id = id,
-            path = cmd
-        )
+        FileDeletedEvents(events)
     }
 
     /**
@@ -350,7 +369,7 @@ class FileEndpoint(
         )
     }
 
-    private fun mustBeSavedToSsm(category: String?) = category in fsSsmConfig.directories.orEmpty()
+    private fun mustBeSavedToSsm(directory: String?) = directory in fsSsmConfig.directories.orEmpty()
 
     private suspend fun ByteArray.initFileInSsm(cmd: FileUploadCommand, fileId: FileId, path: String): FileUploadedEvent {
         return FileInitCommand(
@@ -374,4 +393,10 @@ class FileEndpoint(
     private suspend fun FilePath.buildUrl() = buildUrl(s3Properties.externalUrl, s3BucketProvider.getBucket(), s3Properties.dns)
 
     private fun Policy?.orEmpty() = this ?: Policy()
+
+    private suspend inline fun <T, R> Iterable<T>.mapAsync(crossinline transform: suspend (T) -> R): List<R> = coroutineScope {
+        map {
+            async { transform(it) }
+        }.awaitAll()
+    }
 }

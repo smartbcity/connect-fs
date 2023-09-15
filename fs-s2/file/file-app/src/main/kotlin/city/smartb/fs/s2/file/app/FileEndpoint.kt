@@ -50,7 +50,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactor.asFlux
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -171,14 +173,14 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.WRITE_FILE)
     @PostMapping("/fileUploads")
-    fun fileUploads(
+    suspend fun fileUploads(
         @RequestPart("command") commands: HashMap<String, FileUploadCommand>,
         @RequestPart("file") files: Flux<FilePart>
-    ) : Flux<FileUploadedEvent> {
-        return files.map { file ->
+    ): Flux<FileUploadedEvent> {
+        return files.asFlow().map { file ->
             val cmd = commands[file.filename()]!! // TODO throw readable error if no command found for file
             fileUpload(cmd, file)
-        }
+        }.asFlux()
     }
 
     /**
@@ -186,10 +188,10 @@ class FileEndpoint(
      */
     @RolesAllowed(Roles.WRITE_FILE)
     @PostMapping("/fileUpload")
-    fun fileUpload(
+    suspend fun fileUpload(
         @RequestPart("command") cmd: FileUploadCommand,
         @RequestPart("file") file: FilePart
-    ): FileUploadedEvent = runBlocking {
+    ): FileUploadedEvent {
         val pathStr = cmd.path.toString()
         logger.info("fileUpload: $cmd")
 
@@ -209,7 +211,7 @@ class FileEndpoint(
             vectorize(cmd.path, cmd.metadata, fileByteArray)
         }
 
-        if (mustBeSavedToSsm(cmd.path.directory)) {
+        return if (mustBeSavedToSsm(cmd.path.directory)) {
             if (fileExists) {
                 fileByteArray.logFileInSsm(cmd, fileId, cmd.path.buildUrl())
             } else {

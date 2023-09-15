@@ -12,6 +12,7 @@ rootProject.name = "fs"
 include(
 	"fs-api:api-config",
 	"fs-api:api-gateway",
+	"fs-api:f2-spring-boot-starter-auth-tenant"
 )
 
 include(

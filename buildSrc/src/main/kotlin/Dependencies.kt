@@ -22,9 +22,10 @@ object Versions {
 	val f2 = Framework.fixers
 	val s2 = Framework.fixers
 	val ssm = Framework.fixers
-	val i2 = Framework.fixers
 	const val springBoot = PluginVersions.springBoot
 	const val springFramework = FixersVersions.Spring.framework
+	const val springSecurity = "6.1.3"
+
 	const val ktor = FixersVersions.Kotlin.ktor
 	const val minio = "8.5.5"
 }

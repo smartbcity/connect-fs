@@ -11,6 +11,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+f2:
+  tenant:
+    issuer-base-uri: http://keycloak-it:8080
+
 fs:
   space:
 #   name: fs-sample
@@ -49,11 +53,13 @@ spring:
     activate:
       on-profile: local
 
+f2:
+  tenant:
+    issuer-base-uri: http://localhost:8080
+
 fs:
   s3:
     username: minio
-    bucket:
-      name: fs-sample
   ssm:
     directories:
       - important

@@ -1,10 +1,8 @@
 package city.smartb.fs.s2.file.app
 
-import city.smartb.fs.s2.file.app.config.FileSourcingS2Decider
-import city.smartb.fs.api.config.FsConfig
-import city.smartb.fs.api.config.FsProperties
 import city.smartb.fs.api.config.S3BucketProvider
 import city.smartb.fs.api.config.S3Properties
+import city.smartb.fs.s2.file.app.config.FileSourcingS2Decider
 import city.smartb.fs.s2.file.domain.FileDecider
 import city.smartb.fs.s2.file.domain.features.command.FileDeleteByIdCommand
 import city.smartb.fs.s2.file.domain.features.command.FileDeletedEvent

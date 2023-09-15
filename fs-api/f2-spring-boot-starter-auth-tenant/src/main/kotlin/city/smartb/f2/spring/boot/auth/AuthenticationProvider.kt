@@ -41,7 +41,7 @@ object AuthenticationProvider {
     }
 
     suspend fun getSpace(): String? {
-        return getIssuer()?.split("/")?.last()
+        return getIssuer()?.substringAfterLast("/", "")?.ifEmpty { null }
     }
 
     suspend fun hasRole(role: String): Boolean {

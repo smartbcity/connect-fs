@@ -53,11 +53,13 @@ spring:
     activate:
       on-profile: local
 
+f2:
+  tenant:
+    issuer-base-uri: http://localhost:8080
+
 fs:
   s3:
     username: minio
-    bucket:
-      name: fs-sample
   ssm:
     directories:
       - important

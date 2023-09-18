@@ -1,4 +1,4 @@
-package city.smartb.registry.program.f2.chat.domain.model
+package city.smartb.fs.s2.file.domain.model
 
 import kotlin.js.JsExport
 import kotlin.js.JsName

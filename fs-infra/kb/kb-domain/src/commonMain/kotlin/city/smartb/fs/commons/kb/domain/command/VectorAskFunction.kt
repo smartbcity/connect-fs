@@ -1,7 +1,7 @@
 package city.smartb.fs.commons.kb.domain.command
 
 import city.smartb.fs.s2.file.domain.model.FileAskMessage
-import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
+import city.smartb.fs.s2.file.domain.model.FileAskMetadata
 import f2.dsl.cqrs.Event
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable

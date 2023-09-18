@@ -2,8 +2,8 @@ package city.smartb.fs.s2.file.domain.features.query
 
 import city.smartb.fs.s2.file.domain.model.FileAskMessage
 import city.smartb.fs.s2.file.domain.model.FileAskMessageDTO
-import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadata
-import city.smartb.registry.program.f2.chat.domain.model.FileAskMetadataDTO
+import city.smartb.fs.s2.file.domain.model.FileAskMetadata
+import city.smartb.fs.s2.file.domain.model.FileAskMetadataDTO
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport

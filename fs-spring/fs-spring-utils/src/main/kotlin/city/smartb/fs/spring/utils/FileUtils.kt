@@ -10,11 +10,15 @@ import java.security.MessageDigest
 import java.util.Base64
 
 
-fun FilePath.toUploadCommand() = FileUploadCommand(
+fun FilePath.toUploadCommand(
+    metadata: Map<String, String> = emptyMap(),
+    vectorize: Boolean = false
+) = FileUploadCommand(
     path = this,
     metadata = mapOf(
         "uploadedAt" to System.currentTimeMillis().toString()
-    )
+    ) + metadata,
+    vectorize = vectorize
 )
 
 fun ByteArray.hash() = MessageDigest

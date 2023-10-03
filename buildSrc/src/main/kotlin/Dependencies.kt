@@ -28,6 +28,7 @@ object Versions {
 
 	const val ktor = FixersVersions.Kotlin.ktor
 	const val minio = "8.5.5"
+	const val reflection = "0.10.2"
 }
 
 object Repo {

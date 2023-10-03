@@ -10,6 +10,6 @@ dependencies {
     //TODO replace f2-spring-boot-starter-auth-tenant by  Dependencies.Jvm.f2Auth(::api)
     api(project(":fs-api:f2-spring-boot-starter-auth-tenant"))
 
-    implementation(project(":fs-commons:error"))
+    implementation(project(":fs-commons:fs-error"))
     api("io.minio:minio:${Versions.minio}")
 }

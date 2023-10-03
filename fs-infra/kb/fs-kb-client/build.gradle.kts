@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":fs-infra:kb:kb-domain"))
+    api(project(":fs-infra:kb:fs-kb-domain"))
 
     Dependencies.Spring.autoConfigure(::implementation, ::kapt)
     Dependencies.Mpp.f2Client(::implementation)

@@ -16,12 +16,12 @@ include(
 )
 
 include(
-	"fs-commons:error",
+	"fs-commons:fs-error",
 )
 
 include(
-	"fs-infra:kb:kb-client",
-	"fs-infra:kb:kb-domain",
+	"fs-infra:kb:fs-kb-client",
+	"fs-infra:kb:fs-kb-domain",
 )
 
 include(
@@ -29,7 +29,7 @@ include(
 )
 
 include(
-	"fs-s2:file:file-app",
-	"fs-s2:file:file-client",
-	"fs-s2:file:file-domain",
+	"fs-s2:file:fs-file-app",
+	"fs-s2:file:fs-file-client",
+	"fs-s2:file:fs-file-domain",
 )

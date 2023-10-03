@@ -6,6 +6,6 @@ plugins {
 }
 
 dependencies {
-	api(project(":fs-s2:file:file-domain"))
+	api(project(":fs-s2:file:fs-file-domain"))
 	Dependencies.ktor(::implementation)
 }

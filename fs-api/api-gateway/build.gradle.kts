@@ -10,8 +10,8 @@ dependencies {
 
     implementation("city.smartb.ssm:ssm-tx-config-spring-boot-starter:${Versions.s2}")
     implementation(project(":fs-api:api-config"))
-    implementation(project(":fs-s2:file:file-app"))
-    implementation("org.reflections:reflections:0.10.2")
+    implementation(project(":fs-s2:file:fs-file-app"))
+    implementation("org.reflections:reflections:${Versions.reflection}")
 
 }
 

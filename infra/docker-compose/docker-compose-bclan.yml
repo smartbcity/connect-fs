@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  ca.bc-coop.bclan:
+    container_name: verr-ca-bclan
+    image: smartbcity/commune-sandbox-ca:2.3.3-0.8.2-2
+    networks:
+      - net
+
+  orderer.bclan:
+    container_name: verr-orderer
+    image: smartbcity/commune-sandbox-orderer:2.3.3-0.8.2-2
+    networks:
+      - net
+
+  couchdb.bc-coop.bclan:
+    container_name: verr-couchdb
+    image: couchdb:3.1.2
+    environment:
+      - COUCHDB_USER=${BCLAN_COUCH_USER}
+      - COUCHDB_PASSWORD=${BCLAN_COUCH_PASS}
+    ports:
+      - "5984:5984"
+    networks:
+      - net
+    depends_on:
+      - orderer.bclan
+
+  peer0.bc-coop.bclan:
+    container_name: verr-peer0-bclan
+    image: smartbcity/commune-sandbox-peer:2.3.3-0.8.2-2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${DOCKER_NETWORK}
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${BCLAN_COUCH_ADDRESS}
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=${BCLAN_COUCH_USER}
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=${BCLAN_COUCH_PASS}
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+    networks:
+      - net
+
+  coop-rest-java:
+    container_name: verr-coop-rest-bclan
+    image: smartbcity/commune-sandbox-ssm-rest:2.3.3-0.8.2-2
+    environment:
+      - i2_jwt-issuer-uri=
+    ports:
+      - "9090:9090"
+    depends_on:
+      - peer0.bc-coop.bclan
+    networks:
+      - net
+
+networks:
+  net:
+    name: ${DOCKER_NETWORK}
+    external: true

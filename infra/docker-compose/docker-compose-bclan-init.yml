@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  cli-init.bc-coop.bclan:
+    container_name: verr-cli-init-bclan
+    image: smartbcity/commune-sandbox-cli:2.3.3-0.8.2-2
+    command: /opt/commune-sandbox/util/init.sh
+    networks:
+      - net
+
+networks:
+  net:
+    name: ${DOCKER_NETWORK}
+    external: true

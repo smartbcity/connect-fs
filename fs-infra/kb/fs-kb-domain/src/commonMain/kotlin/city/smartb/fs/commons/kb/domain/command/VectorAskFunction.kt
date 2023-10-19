@@ -1,7 +1,6 @@
 package city.smartb.fs.commons.kb.domain.command
 
 import city.smartb.fs.s2.file.domain.model.FileAskMessage
-import city.smartb.fs.s2.file.domain.model.FileAskMetadata
 import f2.dsl.cqrs.Event
 import f2.dsl.fnc.F2Function
 import kotlinx.serialization.Serializable
@@ -25,22 +24,7 @@ typealias VectorAskFunction = F2Function<VectorAskQueryDTOBase, VectorAskedEvent
 interface VectorAskQueryDTO {
     val question: String
     val history: List<FileAskMessage>
-    val metadata: FileAskMetadata
-//    mapOf(
-//    "question" to question,
-//    "messages" to history.map { message -> mapOf(
-//        "content" to message.content,
-//        "type" to message.type,
-//        "additional_kwargs" to emptyMap<String, String>()
-//        ) },
-//    "metadata" to mapOf(
-//    if(metadata.targetedFiles.isNotEmpty()) {
-//        "targeted_files" to metadata.targetedFiles
-//    }
-//    else {
-//        "" to ""
-//    }
-//    )
+    val targetedFiles: List<String>
 }
 
 interface VectorAskMessageDTO {
@@ -64,7 +48,7 @@ class VectorAskMessageDTOBase(
 data class VectorAskQueryDTOBase(
     override val question: String,
     override val history: List<FileAskMessage>,
-    override val metadata: FileAskMetadata
+    override val targetedFiles: List<String>
 ): VectorAskQueryDTO
 
 /**

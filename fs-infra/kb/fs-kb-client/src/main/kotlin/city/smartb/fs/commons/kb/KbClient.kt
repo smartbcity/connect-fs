@@ -4,14 +4,12 @@ import city.smartb.fs.commons.kb.domain.command.VectorAskFunction
 import city.smartb.fs.commons.kb.domain.command.VectorAskedEventDTOBase
 import city.smartb.fs.commons.kb.domain.command.VectorCreateFunction
 import f2.client.F2Client
-import f2.client.function
 import f2.client.ktor.F2ClientBuilder
 import f2.client.ktor.get
 import f2.client.ktor.http.F2DefaultJson
 import f2.client.ktor.http.HttpF2Client
 import f2.dsl.fnc.F2Function
 import f2.dsl.fnc.F2SupplierSingle
-import f2.dsl.fnc.f2Function
 import f2.dsl.fnc.f2SupplierSingle
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
@@ -28,7 +26,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -74,7 +71,7 @@ open class KbClient(val client: F2Client) {
                 setBody(
                 buildJsonObject {
                     put("question", cmd.question)
-                    put("messages", buildJsonArray{
+                    put("messages", buildJsonArray {
                         cmd.history.forEach { message ->
                             add(buildJsonObject {
                                 put("content", message.content)
@@ -83,14 +80,8 @@ open class KbClient(val client: F2Client) {
                             })
                         }
                     })
-                    put("metadata", buildJsonObject {
-                        if (cmd.metadata.targetedFiles.isNotEmpty()) {
-
-                            put("targeted_files",
-                                buildJsonArray {  cmd.metadata.targetedFiles.forEach { add(it) } })
-                        } else {
-                            put("", "")
-                        }
+                    put("targeted_files", buildJsonArray {
+                        cmd.targetedFiles.forEach(::add)
                     })
                 })
             }.body()!!
@@ -102,9 +93,10 @@ open class KbClient(val client: F2Client) {
         msgs.map { cmd ->
             val httpF2Client = (client as HttpF2Client)
             httpF2Client.httpClient.submitFormWithBinaryData(
-                url = "${httpF2Client.urlBase}",
+                url = httpF2Client.urlBase,
                 formData = FormDataBodyBuilder().apply {
-                    param("metadata", cmd.metadata + ("fsPath" to cmd.path.toString()))
+                    param("metadata", cmd.metadata)
+                    param("path", cmd.path.toString())
                     file("file", cmd.file, cmd.path.name)
                 }.toFormData()
             ).body()

@@ -28,12 +28,16 @@ class FileClient(
 
     suspend fun fileList(command: List<FileListQuery>): List<FileListResult> = post("fileList", command)
 
-    suspend fun fileUpload(command: FileUploadCommand, file: ByteArray): FileUploadedEvent = postFormData("fileUpload") {
+    suspend fun fileUpload(
+        command: FileUploadCommand, file: ByteArray
+    ): FileUploadedEvent = postFormData("fileUpload") {
         param("command", command)
         file("file", file, command.path.name)
     }
 
-    suspend fun fileDelete(command: List<FileDeleteCommand>): List<FileDeletedEvents> = post("fileDelete", command)
+    suspend fun fileDelete(
+        command: List<FileDeleteCommand>
+    ): List<FileDeletedEvents> = post("fileDelete", command)
 
     suspend fun initPublicDirectory(
         command: List<FileInitPublicDirectoryCommand>

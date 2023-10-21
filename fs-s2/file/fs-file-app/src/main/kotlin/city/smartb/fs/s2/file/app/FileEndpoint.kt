@@ -259,7 +259,7 @@ class FileEndpoint(
         logger.info("fileAskQuestion: $query")
         VectorAskQueryDTOBase(
             question = query.question,
-            metadata = query.metadata,
+            targetedFiles = query.metadata.targetedFiles,
             history = query.history
         ).invokeWith(kbClient.knowledgeAsk())
             .let { FileAskQuestionResult(it.item) }
